@@ -1,0 +1,10 @@
+/home/jack/Projects/TinyWeChat/build/CMakeFiles/edit_cache.dir
+/home/jack/Projects/TinyWeChat/build/CMakeFiles/rebuild_cache.dir
+/home/jack/Projects/TinyWeChat/build/wx-client/CMakeFiles/tinywechat-client.dir
+/home/jack/Projects/TinyWeChat/build/wx-client/CMakeFiles/edit_cache.dir
+/home/jack/Projects/TinyWeChat/build/wx-client/CMakeFiles/rebuild_cache.dir
+/home/jack/Projects/TinyWeChat/build/wx-client/CMakeFiles/tinywechat-client_autogen_timestamp_deps.dir
+/home/jack/Projects/TinyWeChat/build/wx-client/CMakeFiles/tinywechat-client_autogen.dir
+/home/jack/Projects/TinyWeChat/build/wx-server/CMakeFiles/tinywechat-server.dir
+/home/jack/Projects/TinyWeChat/build/wx-server/CMakeFiles/edit_cache.dir
+/home/jack/Projects/TinyWeChat/build/wx-server/CMakeFiles/rebuild_cache.dir

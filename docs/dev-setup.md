@@ -65,6 +65,39 @@ cmake -S . -B build -G Ninja
 cmake --build build
 ```
 
+### 常见问题：CMake 源目录不匹配（Cache 指向了别的源码目录）
+
+如果你看到类似报错：
+
+> CMake Error: The source ".../TinyWeChat/CMakeLists.txt" does not match the source ".../TinyWeChat/wx-client/CMakeLists.txt" used to generate cache.
+
+意思是：你正在复用同一个 `build/` 目录，但这个目录里的 `CMakeCache.txt` 之前是用**另一个源码目录**（比如 `wx-client/`）配置出来的。CMake 不允许在同一个 build 目录里切换源码目录。
+
+最简单修复（推荐）：清理 build 目录后重新配置：
+```bash
+rm -rf build
+cmake -S . -B build -G Ninja
+cmake --build build
+```
+
+或者只清理缓存文件：
+```bash
+rm -f build/CMakeCache.txt
+rm -rf build/CMakeFiles
+cmake -S . -B build -G Ninja
+```
+
+### 可选：分别构建客户端/服务端（避免互相影响）
+
+如果你更想把两端完全分开构建（新手也更不容易混）：
+```bash
+cmake -S wx-client -B build/wx-client -G Ninja
+cmake --build build/wx-client
+
+cmake -S wx-server -B build/wx-server -G Ninja
+cmake --build build/wx-server
+```
+
 ## 5. 其他发行版（思路）
 
 - Arch：用 `pacman` 安装 qt6-base、qt6-tools、cmake、ninja、sqlite、asio、nlohmann-json

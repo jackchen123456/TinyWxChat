@@ -1,0 +1,4 @@
+# Hashes of file build rules.
+fd2b0a9b43b395f3e0e00b73879fb51b CMakeFiles/tinywechat-client_autogen
+fd2b0a9b43b395f3e0e00b73879fb51b CMakeFiles/tinywechat-client_autogen_timestamp_deps
+f727cc99118f8ff25c8050650040f4dc tinywechat-client_autogen/timestamp

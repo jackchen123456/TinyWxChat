@@ -1,0 +1,3 @@
+/home/jack/Projects/TinyWeChat/wx-server/build/CMakeFiles/tinywechat-server.dir
+/home/jack/Projects/TinyWeChat/wx-server/build/CMakeFiles/edit_cache.dir
+/home/jack/Projects/TinyWeChat/wx-server/build/CMakeFiles/rebuild_cache.dir

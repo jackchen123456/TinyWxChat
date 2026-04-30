@@ -56,10 +56,227 @@ TinyWeChat/
 	CLAUDE.md       # 通用行为准则（谨慎/简单/外科式修改/可验证）
 ```
 
+## 服务端 (Phase 1 — 已实现)
+
+服务端已完成 MVP：登录认证、单聊文本收发、消息落库、历史拉取。客户端已就绪，可直接启动 Qt GUI 交互。
+
+### 构建
+
+```bash
+cd wx-server
+cmake -S . -B build -G Ninja
+cmake --build build
+```
+
+### 启动
+
+```bash
+cd wx-server
+./build/tinywechat-server
+```
+
+**命令行参数：**
+
+| 参数 | 默认值 | 说明 |
+|------|--------|------|
+| `--port 9090` | 9090 | 监听端口 |
+| `--db data/tinywechat.db` | data/tinywechat.db | SQLite 数据库路径 |
+| `--bind 0.0.0.0` | 0.0.0.0 | 绑定地址 |
+
+数据库首次启动时自动创建，并预置两个测试用户：
+
+| 用户名 | 密码 | 昵称 |
+|--------|------|------|
+| alice | 123456 | Alice |
+| bob | 123456 | Bob |
+
+### 用测试脚本验证
+
+```bash
+cd wx-server
+
+# 启动服务端（另一个终端）
+./build/tinywechat-server --port 19090
+
+# 运行功能验收（登录→发消息→收消息→拉历史）
+python3 test_phase1.py
+
+# 运行边界测试（错误密码、重复登录踢人、未登录拦截等）
+python3 test_edge.py
+```
+
+### 协议概览
+
+客户端与服务端通过 **TCP + 8 字节二进制帧头 + JSON Payload** 通信，详见 `docs/protocol.md`。
+
+**帧格式（8 字节头）：**
+
+```
+Offset  Size  Field
+────────────────────
+0       4     length       Payload 长度（大端 uint32）
+4       2     version      固定 0x0001
+6       1     frame_type   0x01=请求  0x02=响应  0x03=通知  0x04=心跳
+7       1     flags        预留，填 0x00
+```
+
+**Payload 结构（JSON）：**
+
+```json
+{"type": "消息类型", "seq": 序号, "body": { ... }}
+```
+
+**客户端交互流程：**
+
+```
+1. TCP 连接 → 服务端 IP:端口
+2. 发送 auth.login 帧 → 收到 auth.login_res (code=0 表示成功)
+3. 发送 chat.send 帧 → 收到 chat.send_res (发送确认)
+4. 对方在线时收到 chat.recv 通知 (frame_type=0x03)
+5. 发送 chat.history 帧 → 收到 chat.history_res (历史消息列表)
+6. 每 30 秒发送 ping 心跳
+```
+
+**核心消息 type 速查（Phase 1）：**
+
+| type | 方向 | 说明 |
+|------|------|------|
+| `auth.login` | C→S | 登录 `{username, password}` |
+| `auth.login_res` | S→C | 登录结果 `{code, user_id, nickname}` |
+| `chat.send` | C→S | 发消息 `{to_user_id, content, msg_type}` |
+| `chat.send_res` | S→C | 发送确认 `{code, msg_id, timestamp}` |
+| `chat.recv` | S→C | 消息推送（通知） |
+| `chat.history` | C→S | 拉历史 `{with_user_id, before_msg_id, limit}` |
+| `chat.history_res` | S→C | 历史列表 `{code, messages[]}` |
+| `ping` / `pong` | C⇄S | 心跳 |
+
+客户端实现时参考 `docs/protocol.md` 获取完整字段定义和错误码。
+
+## 客户端 (Phase 1 — 已实现)
+
+Qt6 Widgets 客户端，提供登录界面和聊天界面。架构分三层：网络层（帧编解码 + TCP 长连接）、协议层（消息构造/解析）、UI 层（登录页 + 聊天页）。
+
+### 构建
+
+```bash
+cd wx-client
+cmake -S . -B build
+cmake --build build -j$(nproc)
+```
+
+**依赖：** Qt6 (Widgets, Network)、CMake ≥ 3.20、C++17。
+
+Ubuntu 一键安装依赖：
+```bash
+sudo apt-get install -y qt6-base-dev cmake g++
+```
+
+### 启动
+
+客户端默认连接 `127.0.0.1:9090`，因此必须先启动服务端：
+
+```bash
+# 终端 1：启动服务端
+cd wx-server
+./build/tinywechat-server --port 9090
+
+# 终端 2：启动客户端（Alice）
+cd wx-client/build
+./tinywechat-client
+
+# 终端 3：启动第二个客户端（Bob）
+cd wx-client/build
+./tinywechat-client
+```
+
+### 与服务端交互（操作指南）
+
+客户端启动后，按以下步骤完成一次完整的聊天交互：
+
+**1. 登录**
+
+- 窗口显示「TinyWeChat 登录」标题
+- 输入用户名和密码（测试用户：`alice` / `123456` 或 `bob` / `123456`）
+- 点击「登录」按钮
+- 成功：自动跳转到聊天页面；失败：显示错误提示
+
+**2. 发起聊天**
+
+- 聊天页面顶部有一个「发送给用户ID:」输入框
+- 输入目标用户的 ID（Alice 的 ID 是 `1`，Bob 的 ID 是 `2`）
+- 输入后可按回车确认
+
+**3. 发送消息**
+
+- 底部输入框输入消息内容（最长 4096 字节）
+- 点击「发送」按钮或按回车键
+- 消息立即显示在消息列表中（蓝色气泡 = 自己发的，绿色气泡 = 收到的）
+
+**4. 接收消息**
+
+- 对方发来的消息会实时推送到消息列表
+- 推送消息以绿色气泡展示，带有发送者昵称
+
+**5. 拉取历史消息**
+
+在聊天页面输入目标用户 ID 后，客户端会自动向服务端请求与该用户的最近 20 条历史消息并展示。
+
+### 交互流程图
+
+```
+┌──────────┐          ┌──────────┐          ┌──────────┐
+│  Alice   │          │  服务端   │          │   Bob    │
+│ (客户端)  │          │  :9090   │          │ (客户端)  │
+└────┬─────┘          └────┬─────┘          └────┬─────┘
+     │                     │                     │
+     │── TCP connect ─────>│<─── TCP connect ────│
+     │                     │                     │
+     │── auth.login ──────>│                     │
+     │<─ auth.login_res ───│                     │
+     │   (code=0, uid=1)   │                     │
+     │                     │<── auth.login ──────│
+     │                     │── auth.login_res ──>│
+     │                     │   (code=0, uid=2)   │
+     │                     │                     │
+     │── chat.send ───────>│                     │
+     │   (to=2, "你好 Bob") │                     │
+     │                     │── INSERT messages──>│
+     │<─ chat.send_res ────│                     │
+     │   (msg_id=42)       │                     │
+     │                     │── chat.recv ───────>│
+     │                     │   ("你好 Bob")       │
+     │                     │                     │
+     │                     │<── chat.send ───────│
+     │                     │   (to=1, "Hi Alice")│
+     │<─ chat.recv ────────│                     │
+     │   ("Hi Alice")      │                     │
+     │                     │                     │
+```
+
+### 文件结构
+
+```
+wx-client/
+├── main.cpp                     # 入口
+├── CMakeLists.txt               # 构建配置
+├── network/
+│   ├── FrameCodec.h / .cpp      # 8B 帧头 + JSON 编解码
+│   └── WeChatSocket.h / .cpp    # TCP 长连接、帧收发、30s 心跳
+├── protocol/
+│   └── MessageBuilder.h / .cpp  # 消息构造 (login/send/history) 与响应解析
+└── ui/
+    ├── LoginWidget.h / .cpp      # 登录页面
+    ├── ChatWidget.h / .cpp       # 聊天页面（消息列表 + 输入框 + 发送）
+    └── MainWindow.h / .cpp       # 主窗口（页面切换管理）
+```
+
 ## 文档入口（先看这些）
 
 - 需求与验收：docs/requirements.md
 - 环境搭建：docs/dev-setup.md
+- 协议设计：docs/protocol.md
+- 数据库设计：docs/storage.md
+- 端到端时序：docs/flows.md
 - Hermes 工作流：docs/hermes-workflow.md
 
 ## 作为初学者：推荐的实现顺序（最重要）
@@ -84,11 +301,28 @@ hermes profile use tinywechat
 2) 用 Hermes 先产出“协议/存储/时序”文档（主线只写文档，不写代码）
 ```bash
 cd /home/jack/Projects/TinyWeChat
+hermes chat --checkpoints
+
+# 退出后，把刚创建的会话重命名为 tinywechat-arch（只需做一次）
+hermes sessions list
+hermes sessions rename <SESSION_ID> tinywechat-arch
+
+# 以后继续这个会话再用：
 hermes chat --checkpoints -c tinywechat-arch
 ```
 
 3) 再并行实现服务端与客户端（推荐使用 worktree，等价“子 agent”隔离上下文）
 ```bash
+# 第一次创建（各执行一次）：
+hermes chat --checkpoints --worktree
+hermes sessions list
+hermes sessions rename <SESSION_ID> tinywechat-server
+
+hermes chat --checkpoints --worktree
+hermes sessions list
+hermes sessions rename <SESSION_ID> tinywechat-client
+
+# 以后继续再用：
 hermes chat --checkpoints --worktree -c tinywechat-server
 hermes chat --checkpoints --worktree -c tinywechat-client
 ```
@@ -102,6 +336,9 @@ hermes chat --checkpoints --worktree -c tinywechat-client
 - `tinywechat-integration`：联调/验收负责人（跑命令、查日志、对齐行为）
 
 建议固定命令（在仓库根目录运行）：
+
+> 说明：下面这组命令用于“继续已命名会话”。如果你还没创建/命名这些会话，请先按上面的“第一次创建 → `hermes sessions rename`”流程做一次。
+
 ```bash
 cd /home/jack/Projects/TinyWeChat
 hermes chat --checkpoints -c tinywechat-arch

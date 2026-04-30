@@ -33,9 +33,16 @@ hermes profile show tinywechat
 
 ## 1. 主线会话：需求/协议/里程碑（只做文档，不写代码）
 
-在仓库根目录运行：
+第一次创建会话（不要加 `-c`，因为 `-c` 是“继续已有会话”）：
 ```bash
 cd /home/jack/Projects/TinyWeChat
+hermes chat --checkpoints
+
+# 退出后重命名（只需做一次）
+hermes sessions list
+hermes sessions rename <SESSION_ID> tinywechat-arch
+
+# 以后继续这个会话再用：
 hermes chat --checkpoints -c tinywechat-arch
 ```
 
@@ -49,7 +56,14 @@ hermes chat --checkpoints -c tinywechat-arch
 ## 2. 并行会话：服务端与客户端各一条线
 
 ### 服务端（建议独立 worktree，避免并行互相改文件）
+第一次创建：
 ```bash
+hermes chat --checkpoints --worktree
+
+hermes sessions list
+hermes sessions rename <SESSION_ID> tinywechat-server
+
+# 以后继续再用：
 hermes chat --checkpoints --worktree -c tinywechat-server
 ```
 
@@ -62,7 +76,14 @@ hermes chat --checkpoints --worktree -c tinywechat-server
   - 每一步都给出构建/运行/验证命令”
 
 ### 客户端（同样独立 worktree）
+第一次创建：
 ```bash
+hermes chat --checkpoints --worktree
+
+hermes sessions list
+hermes sessions rename <SESSION_ID> tinywechat-client
+
+# 以后继续再用：
 hermes chat --checkpoints --worktree -c tinywechat-client
 ```
 
@@ -77,7 +98,14 @@ hermes chat --checkpoints --worktree -c tinywechat-client
 ## 3. 集成会话：联调与验收
 
 建议单独开一个“集成/验收”会话，专门负责联调脚本与问题定位：
+第一次创建：
 ```bash
+hermes chat --checkpoints
+
+hermes sessions list
+hermes sessions rename <SESSION_ID> tinywechat-integration
+
+# 以后继续再用：
 hermes chat --checkpoints -c tinywechat-integration
 ```
 
