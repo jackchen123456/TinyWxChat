@@ -55,6 +55,24 @@ private:
     void dispatchMessage(const std::string& type, int seq, const nlohmann::json& body);
     void writerLoop();
 
+    // ── Individual message handlers (Phase 2/3) ──────────
+    void handleAuthLogin(int seq, const nlohmann::json& body);
+    void handleAuthRegister(int seq, const nlohmann::json& body);
+    void handleChatSend(int seq, const nlohmann::json& body);
+    void handleChatHistory(int seq, const nlohmann::json& body);
+    void handleChatConversations(int seq, const nlohmann::json& body);
+    void handleFriendRequest(int seq, const nlohmann::json& body);
+    void handleFriendHandle(int seq, const nlohmann::json& body);
+    void handleFriendList(int seq, const nlohmann::json& body);
+    void handleFriendPending(int seq, const nlohmann::json& body);
+    void handleGroupCreate(int seq, const nlohmann::json& body);
+    void handleGroupJoin(int seq, const nlohmann::json& body);
+    void handleGroupSend(int seq, const nlohmann::json& body);
+    void handleGroupHistory(int seq, const nlohmann::json& body);
+    void handleGroupList(int seq, const nlohmann::json& body);
+    void handleGroupApply(int seq, const nlohmann::json& body);
+    void handleGroupApplyHandle(int seq, const nlohmann::json& body);
+
     int         fd_;
     Server&     server_;
     std::atomic<SessionState> state_{SessionState::CONNECTED};

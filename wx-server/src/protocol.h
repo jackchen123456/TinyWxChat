@@ -31,10 +31,45 @@ namespace MsgType {
     constexpr const char* RECV        = "chat.recv";
     constexpr const char* HISTORY     = "chat.history";
     constexpr const char* HISTORY_RES = "chat.history_res";
+    constexpr const char* CONVERSATIONS     = "chat.conversations";
+    constexpr const char* CONVERSATIONS_RES = "chat.conversations_res";
 
     // Heartbeat
     constexpr const char* PING = "ping";
     constexpr const char* PONG = "pong";
+
+    // ── Phase 2: Register ───────────────────────────────
+    constexpr const char* REGISTER     = "auth.register";
+    constexpr const char* REGISTER_RES = "auth.register_res";
+
+    // ── Phase 2: Friend ─────────────────────────────────
+    constexpr const char* FRIEND_REQUEST     = "friend.request";
+    constexpr const char* FRIEND_REQUEST_RES = "friend.request_res";
+    constexpr const char* FRIEND_NOTIFY      = "friend.notify";
+    constexpr const char* FRIEND_HANDLE      = "friend.handle";
+    constexpr const char* FRIEND_HANDLE_RES  = "friend.handle_res";
+    constexpr const char* FRIEND_LIST        = "friend.list";
+    constexpr const char* FRIEND_LIST_RES    = "friend.list_res";
+    constexpr const char* FRIEND_PENDING     = "friend.pending";
+    constexpr const char* FRIEND_PENDING_RES = "friend.pending_res";
+
+    // ── Phase 3: Group ──────────────────────────────────
+    constexpr const char* GROUP_CREATE     = "group.create";
+    constexpr const char* GROUP_CREATE_RES = "group.create_res";
+    constexpr const char* GROUP_JOIN       = "group.join";
+    constexpr const char* GROUP_JOIN_RES   = "group.join_res";
+    constexpr const char* GROUP_SEND       = "group.send";
+    constexpr const char* GROUP_SEND_RES   = "group.send_res";
+    constexpr const char* GROUP_RECV       = "group.recv";
+    constexpr const char* GROUP_HISTORY    = "group.history";
+    constexpr const char* GROUP_HISTORY_RES = "group.history_res";
+    constexpr const char* GROUP_LIST       = "group.list";
+    constexpr const char* GROUP_LIST_RES   = "group.list_res";
+    constexpr const char* GROUP_APPLY          = "group.apply";
+    constexpr const char* GROUP_APPLY_RES      = "group.apply_res";
+    constexpr const char* GROUP_APPLY_NOTIFY    = "group.apply_notify";
+    constexpr const char* GROUP_APPLY_HANDLE    = "group.apply_handle";
+    constexpr const char* GROUP_APPLY_HANDLE_RES = "group.apply_handle_res";
 
     // Error
     constexpr const char* ERROR = "error";
@@ -50,7 +85,16 @@ namespace ErrCode {
     constexpr int USER_NOT_FOUND   = 300;
     constexpr int USER_OFFLINE     = 301;
     constexpr int WRONG_PASSWORD   = 401;
+    constexpr int DUPLICATE_USERNAME = 400;
+    constexpr int USERNAME_TOO_LONG  = 402;
+    constexpr int FRIEND_NOT_FOUND   = 310;
+    constexpr int FRIEND_ALREADY     = 311;
+    constexpr int FRIEND_REQUEST_EXISTS = 312;
+    constexpr int GROUP_NOT_FOUND       = 320;
+    constexpr int GROUP_ALREADY_MEMBER  = 321;
+    constexpr int GROUP_PERMISSION_DENIED = 322;
     constexpr int MESSAGE_TOO_LONG = 500;
+    constexpr int RATE_LIMITED     = 501;
 }
 
 // ── Parsed frame ─────────────────────────────────────────

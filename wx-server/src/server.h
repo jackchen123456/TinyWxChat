@@ -39,6 +39,11 @@ public:
     /// Kick any existing session for userId (called on new login).
     void kickExisting(int64_t userId);
 
+    // ── All sessions management ─────────────────────────
+    void addSession(std::shared_ptr<Session> session);
+    void removeSession(Session* session);
+    std::shared_ptr<Session> getSession(Session* session);
+
     // ── Database access ──────────────────────────────────
     Database& db() { return *db_; }
 
@@ -53,7 +58,11 @@ private:
 
     std::unique_ptr<Database> db_;
 
-    // session map: user_id -> Session*
+    // session map: user_id -> shared_ptr<Session>
     std::mutex              sessionsMutex_;
-    std::unordered_map<int64_t, Session*> sessions_;
+    std::unordered_map<int64_t, std::shared_ptr<Session>> sessions_;
+    
+    // all sessions (for lifecycle management)
+    std::mutex                          allSessionsMutex_;
+    std::vector<std::shared_ptr<Session>> allSessions_;
 };

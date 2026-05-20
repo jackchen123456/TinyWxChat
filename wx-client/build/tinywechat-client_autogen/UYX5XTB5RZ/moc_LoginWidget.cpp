@@ -27,19 +27,20 @@ QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 namespace {
 struct qt_meta_stringdata_LoginWidget_t {
-    uint offsetsAndSizes[24];
+    uint offsetsAndSizes[26];
     char stringdata0[12];
     char stringdata1[9];
     char stringdata2[1];
     char stringdata3[7];
     char stringdata4[9];
-    char stringdata5[15];
-    char stringdata6[12];
-    char stringdata7[16];
-    char stringdata8[6];
+    char stringdata5[11];
+    char stringdata6[15];
+    char stringdata7[12];
+    char stringdata8[16];
     char stringdata9[6];
-    char stringdata10[19];
-    char stringdata11[7];
+    char stringdata10[6];
+    char stringdata11[19];
+    char stringdata12[7];
 };
 #define QT_MOC_LITERAL(ofs, len) \
     uint(sizeof(qt_meta_stringdata_LoginWidget_t::offsetsAndSizes) + ofs), len 
@@ -50,19 +51,21 @@ Q_CONSTINIT static const qt_meta_stringdata_LoginWidget_t qt_meta_stringdata_Log
         QT_MOC_LITERAL(21, 0),  // ""
         QT_MOC_LITERAL(22, 6),  // "userId"
         QT_MOC_LITERAL(29, 8),  // "nickname"
-        QT_MOC_LITERAL(38, 14),  // "onLoginClicked"
-        QT_MOC_LITERAL(53, 11),  // "onConnected"
-        QT_MOC_LITERAL(65, 15),  // "onFrameReceived"
-        QT_MOC_LITERAL(81, 5),  // "Frame"
-        QT_MOC_LITERAL(87, 5),  // "frame"
-        QT_MOC_LITERAL(93, 18),  // "onConnectionFailed"
-        QT_MOC_LITERAL(112, 6)   // "reason"
+        QT_MOC_LITERAL(38, 10),  // "goRegister"
+        QT_MOC_LITERAL(49, 14),  // "onLoginClicked"
+        QT_MOC_LITERAL(64, 11),  // "onConnected"
+        QT_MOC_LITERAL(76, 15),  // "onFrameReceived"
+        QT_MOC_LITERAL(92, 5),  // "Frame"
+        QT_MOC_LITERAL(98, 5),  // "frame"
+        QT_MOC_LITERAL(104, 18),  // "onConnectionFailed"
+        QT_MOC_LITERAL(123, 6)   // "reason"
     },
     "LoginWidget",
     "loggedIn",
     "",
     "userId",
     "nickname",
+    "goRegister",
     "onLoginClicked",
     "onConnected",
     "onFrameReceived",
@@ -80,30 +83,32 @@ Q_CONSTINIT static const uint qt_meta_data_LoginWidget[] = {
       10,       // revision
        0,       // classname
        0,    0, // classinfo
-       5,   14, // methods
+       6,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       1,       // signalCount
+       2,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    2,   44,    2, 0x06,    1 /* Public */,
+       1,    2,   50,    2, 0x06,    1 /* Public */,
+       5,    0,   55,    2, 0x06,    4 /* Public */,
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       5,    0,   49,    2, 0x08,    4 /* Private */,
-       6,    0,   50,    2, 0x08,    5 /* Private */,
-       7,    1,   51,    2, 0x08,    6 /* Private */,
-      10,    1,   54,    2, 0x08,    8 /* Private */,
+       6,    0,   56,    2, 0x08,    5 /* Private */,
+       7,    0,   57,    2, 0x08,    6 /* Private */,
+       8,    1,   58,    2, 0x08,    7 /* Private */,
+      11,    1,   61,    2, 0x08,    9 /* Private */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::Int, QMetaType::QString,    3,    4,
+    QMetaType::Void,
 
  // slots: parameters
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, 0x80000000 | 8,    9,
-    QMetaType::Void, QMetaType::QString,   11,
+    QMetaType::Void, 0x80000000 | 9,   10,
+    QMetaType::Void, QMetaType::QString,   12,
 
        0        // eod
 };
@@ -121,6 +126,8 @@ Q_CONSTINIT const QMetaObject LoginWidget::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<int, std::false_type>,
         QtPrivate::TypeAndForceComplete<const QString &, std::false_type>,
+        // method 'goRegister'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'onLoginClicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'onConnected'
@@ -142,10 +149,11 @@ void LoginWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
         (void)_t;
         switch (_id) {
         case 0: _t->loggedIn((*reinterpret_cast< std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[2]))); break;
-        case 1: _t->onLoginClicked(); break;
-        case 2: _t->onConnected(); break;
-        case 3: _t->onFrameReceived((*reinterpret_cast< std::add_pointer_t<Frame>>(_a[1]))); break;
-        case 4: _t->onConnectionFailed((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
+        case 1: _t->goRegister(); break;
+        case 2: _t->onLoginClicked(); break;
+        case 3: _t->onConnected(); break;
+        case 4: _t->onFrameReceived((*reinterpret_cast< std::add_pointer_t<Frame>>(_a[1]))); break;
+        case 5: _t->onConnectionFailed((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -154,6 +162,13 @@ void LoginWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
             using _t = void (LoginWidget::*)(int , const QString & );
             if (_t _q_method = &LoginWidget::loggedIn; *reinterpret_cast<_t *>(_a[1]) == _q_method) {
                 *result = 0;
+                return;
+            }
+        }
+        {
+            using _t = void (LoginWidget::*)();
+            if (_t _q_method = &LoginWidget::goRegister; *reinterpret_cast<_t *>(_a[1]) == _q_method) {
+                *result = 1;
                 return;
             }
         }
@@ -179,13 +194,13 @@ int LoginWidget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 5)
+        if (_id < 6)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 5;
+        _id -= 6;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 5)
+        if (_id < 6)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 5;
+        _id -= 6;
     }
     return _id;
 }
@@ -195,6 +210,12 @@ void LoginWidget::loggedIn(int _t1, const QString & _t2)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))), const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t2))) };
     QMetaObject::activate(this, &staticMetaObject, 0, _a);
+}
+
+// SIGNAL 1
+void LoginWidget::goRegister()
+{
+    QMetaObject::activate(this, &staticMetaObject, 1, nullptr);
 }
 QT_WARNING_POP
 QT_END_MOC_NAMESPACE

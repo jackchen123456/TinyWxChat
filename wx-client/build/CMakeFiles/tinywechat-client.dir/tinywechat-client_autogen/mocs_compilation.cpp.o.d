@@ -332,16 +332,18 @@ CMakeFiles/tinywechat-client.dir/tinywechat-client_autogen/mocs_compilation.cpp.
  /home/jack/Projects/TinyWeChat/wx-client/build/tinywechat-client_autogen/5SSUPNRDSB/../../../network/FrameCodec.h \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/QByteArray \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/qbytearray.h \
- /home/jack/Projects/TinyWeChat/wx-client/build/tinywechat-client_autogen/UYX5XTB5RZ/moc_ChatWidget.cpp \
- /home/jack/Projects/TinyWeChat/wx-client/build/tinywechat-client_autogen/UYX5XTB5RZ/../../../ui/ChatWidget.h \
- /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QWidget \
- /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qwidget.h \
+ /home/jack/Projects/TinyWeChat/wx-client/build/tinywechat-client_autogen/UYX5XTB5RZ/moc_AvatarLabel.cpp \
+ /home/jack/Projects/TinyWeChat/wx-client/build/tinywechat-client_autogen/UYX5XTB5RZ/../../../ui/AvatarLabel.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QLabel \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qlabel.h \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qtwidgetsglobal.h \
  /usr/include/aarch64-linux-gnu/qt6/QtGui/qtguiglobal.h \
  /usr/include/aarch64-linux-gnu/qt6/QtGui/qtgui-config.h \
  /usr/include/aarch64-linux-gnu/qt6/QtGui/qtguiexports.h \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qtwidgets-config.h \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qtwidgetsexports.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qframe.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qwidget.h \
  /usr/include/aarch64-linux-gnu/qt6/QtGui/qwindowdefs.h \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/qmargins.h \
  /usr/include/aarch64-linux-gnu/qt6/QtGui/qaction.h \
@@ -369,13 +371,51 @@ CMakeFiles/tinywechat-client.dir/tinywechat-client_autogen/mocs_compilation.cpp.
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qsizepolicy.h \
  /usr/include/aarch64-linux-gnu/qt6/QtGui/qcursor.h \
  /usr/include/aarch64-linux-gnu/qt6/QtGui/qbitmap.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qpicture.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qtextdocument.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/QColor \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qcolor.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/QString \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qstring.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/QMouseEvent \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qevent.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qcoreevent.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qpointer.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qeventpoint.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qvector2d.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qvectornd.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qpointingdevice.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qinputdevice.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qscreen.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/QList \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qlist.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/QObject \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qobject.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/QRect \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qrect.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/QSize \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qsize.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/QSizeF \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/QTransform \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qtransform.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qnativeinterface.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qtextcursor.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qtextformat.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qpen.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qtextoption.h \
+ /home/jack/Projects/TinyWeChat/wx-client/build/tinywechat-client_autogen/UYX5XTB5RZ/moc_AvatarSelectDialog.cpp \
+ /home/jack/Projects/TinyWeChat/wx-client/build/tinywechat-client_autogen/UYX5XTB5RZ/../../../ui/AvatarSelectDialog.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QDialog \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qdialog.h \
+ /home/jack/Projects/TinyWeChat/wx-client/build/tinywechat-client_autogen/UYX5XTB5RZ/moc_ChatWidget.cpp \
+ /home/jack/Projects/TinyWeChat/wx-client/build/tinywechat-client_autogen/UYX5XTB5RZ/../../../ui/ChatWidget.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QWidget \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qwidget.h \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QListWidget \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qlistwidget.h \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qlistview.h \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qabstractitemview.h \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qabstractscrollarea.h \
- /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qframe.h \
- /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qwidget.h \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/qabstractitemmodel.h \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/qitemselectionmodel.h \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qabstractitemdelegate.h \
@@ -390,27 +430,48 @@ CMakeFiles/tinywechat-client.dir/tinywechat-client_autogen/mocs_compilation.cpp.
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qrubberband.h \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QLineEdit \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qlineedit.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qtextcursor.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qtextdocument.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qtextformat.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qpen.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qtextoption.h \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QPushButton \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qpushbutton.h \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qabstractbutton.h \
- /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QLabel \
- /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qlabel.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qpicture.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QFrame \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qframe.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/QDateTime \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qdatetime.h \
  /home/jack/Projects/TinyWeChat/wx-client/build/tinywechat-client_autogen/UYX5XTB5RZ/../../../ui/../protocol/MessageBuilder.h \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/QJsonArray \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/qjsonarray.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/QString \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qstring.h \
+ /home/jack/Projects/TinyWeChat/wx-client/build/tinywechat-client_autogen/UYX5XTB5RZ/moc_ConversationListWidget.cpp \
+ /home/jack/Projects/TinyWeChat/wx-client/build/tinywechat-client_autogen/UYX5XTB5RZ/../../../ui/ConversationListWidget.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/QMap \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qmap.h \
+ /home/jack/Projects/TinyWeChat/wx-client/build/tinywechat-client_autogen/UYX5XTB5RZ/moc_EmojiPicker.cpp \
+ /home/jack/Projects/TinyWeChat/wx-client/build/tinywechat-client_autogen/UYX5XTB5RZ/../../../ui/EmojiPicker.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/QStringList \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qstringlist.h \
+ /home/jack/Projects/TinyWeChat/wx-client/build/tinywechat-client_autogen/UYX5XTB5RZ/moc_FriendListWidget.cpp \
+ /home/jack/Projects/TinyWeChat/wx-client/build/tinywechat-client_autogen/UYX5XTB5RZ/../../../ui/FriendListWidget.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/QList \
+ /home/jack/Projects/TinyWeChat/wx-client/build/tinywechat-client_autogen/UYX5XTB5RZ/moc_GroupChatWidget.cpp \
+ /home/jack/Projects/TinyWeChat/wx-client/build/tinywechat-client_autogen/UYX5XTB5RZ/../../../ui/GroupChatWidget.h \
+ /home/jack/Projects/TinyWeChat/wx-client/build/tinywechat-client_autogen/UYX5XTB5RZ/moc_GroupCreateDialog.cpp \
+ /home/jack/Projects/TinyWeChat/wx-client/build/tinywechat-client_autogen/UYX5XTB5RZ/../../../ui/GroupCreateDialog.h \
+ /home/jack/Projects/TinyWeChat/wx-client/build/tinywechat-client_autogen/UYX5XTB5RZ/moc_GroupListWidget.cpp \
+ /home/jack/Projects/TinyWeChat/wx-client/build/tinywechat-client_autogen/UYX5XTB5RZ/../../../ui/GroupListWidget.h \
  /home/jack/Projects/TinyWeChat/wx-client/build/tinywechat-client_autogen/UYX5XTB5RZ/moc_LoginWidget.cpp \
  /home/jack/Projects/TinyWeChat/wx-client/build/tinywechat-client_autogen/UYX5XTB5RZ/../../../ui/LoginWidget.h \
+ /home/jack/Projects/TinyWeChat/wx-client/build/tinywechat-client_autogen/UYX5XTB5RZ/moc_MainHubWidget.cpp \
+ /home/jack/Projects/TinyWeChat/wx-client/build/tinywechat-client_autogen/UYX5XTB5RZ/../../../ui/MainHubWidget.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QStackedWidget \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qstackedwidget.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QHBoxLayout \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qboxlayout.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qlayout.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qlayoutitem.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qboxlayout.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qgridlayout.h \
  /home/jack/Projects/TinyWeChat/wx-client/build/tinywechat-client_autogen/UYX5XTB5RZ/moc_MainWindow.cpp \
  /home/jack/Projects/TinyWeChat/wx-client/build/tinywechat-client_autogen/UYX5XTB5RZ/../../../ui/MainWindow.h \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QMainWindow \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qmainwindow.h \
- /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QStackedWidget \
- /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qstackedwidget.h
+ /home/jack/Projects/TinyWeChat/wx-client/build/tinywechat-client_autogen/UYX5XTB5RZ/../../../ui/RegisterWidget.h \
+ /home/jack/Projects/TinyWeChat/wx-client/build/tinywechat-client_autogen/UYX5XTB5RZ/moc_RegisterWidget.cpp

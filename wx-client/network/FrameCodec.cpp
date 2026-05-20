@@ -65,6 +65,11 @@ bool FrameCodec::decode(const QByteArray& data, Frame& frame, int& consumed)
     frame.frameType = static_cast<FrameType>(data[6]);
     frame.flags     = static_cast<uint8_t>(data[7]);
 
+    // 校验 frame_type 范围（0x01~0x04）
+    uint8_t ft = static_cast<uint8_t>(data[6]);
+    if (ft < 0x01 || ft > 0x04)
+        return false; // 帧格式错误：不识别的 frame_type
+
     // 5. 解析 JSON payload
     if (length > 0) {
         QByteArray payloadBytes = data.mid(HEADER_SIZE, static_cast<int>(length));

@@ -153,10 +153,24 @@ CMakeFiles/tinywechat-client.dir/ui/LoginWidget.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/tinywechat-client.dir/ui/LoginWidget.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jack/Projects/TinyWeChat/wx-client/ui/LoginWidget.cpp -o CMakeFiles/tinywechat-client.dir/ui/LoginWidget.cpp.s
 
+CMakeFiles/tinywechat-client.dir/ui/RegisterWidget.cpp.o: CMakeFiles/tinywechat-client.dir/flags.make
+CMakeFiles/tinywechat-client.dir/ui/RegisterWidget.cpp.o: /home/jack/Projects/TinyWeChat/wx-client/ui/RegisterWidget.cpp
+CMakeFiles/tinywechat-client.dir/ui/RegisterWidget.cpp.o: CMakeFiles/tinywechat-client.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jack/Projects/TinyWeChat/wx-client/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/tinywechat-client.dir/ui/RegisterWidget.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/tinywechat-client.dir/ui/RegisterWidget.cpp.o -MF CMakeFiles/tinywechat-client.dir/ui/RegisterWidget.cpp.o.d -o CMakeFiles/tinywechat-client.dir/ui/RegisterWidget.cpp.o -c /home/jack/Projects/TinyWeChat/wx-client/ui/RegisterWidget.cpp
+
+CMakeFiles/tinywechat-client.dir/ui/RegisterWidget.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/tinywechat-client.dir/ui/RegisterWidget.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jack/Projects/TinyWeChat/wx-client/ui/RegisterWidget.cpp > CMakeFiles/tinywechat-client.dir/ui/RegisterWidget.cpp.i
+
+CMakeFiles/tinywechat-client.dir/ui/RegisterWidget.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/tinywechat-client.dir/ui/RegisterWidget.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jack/Projects/TinyWeChat/wx-client/ui/RegisterWidget.cpp -o CMakeFiles/tinywechat-client.dir/ui/RegisterWidget.cpp.s
+
 CMakeFiles/tinywechat-client.dir/ui/ChatWidget.cpp.o: CMakeFiles/tinywechat-client.dir/flags.make
 CMakeFiles/tinywechat-client.dir/ui/ChatWidget.cpp.o: /home/jack/Projects/TinyWeChat/wx-client/ui/ChatWidget.cpp
 CMakeFiles/tinywechat-client.dir/ui/ChatWidget.cpp.o: CMakeFiles/tinywechat-client.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jack/Projects/TinyWeChat/wx-client/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/tinywechat-client.dir/ui/ChatWidget.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jack/Projects/TinyWeChat/wx-client/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/tinywechat-client.dir/ui/ChatWidget.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/tinywechat-client.dir/ui/ChatWidget.cpp.o -MF CMakeFiles/tinywechat-client.dir/ui/ChatWidget.cpp.o.d -o CMakeFiles/tinywechat-client.dir/ui/ChatWidget.cpp.o -c /home/jack/Projects/TinyWeChat/wx-client/ui/ChatWidget.cpp
 
 CMakeFiles/tinywechat-client.dir/ui/ChatWidget.cpp.i: cmake_force
@@ -167,10 +181,136 @@ CMakeFiles/tinywechat-client.dir/ui/ChatWidget.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/tinywechat-client.dir/ui/ChatWidget.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jack/Projects/TinyWeChat/wx-client/ui/ChatWidget.cpp -o CMakeFiles/tinywechat-client.dir/ui/ChatWidget.cpp.s
 
+CMakeFiles/tinywechat-client.dir/ui/ConversationListWidget.cpp.o: CMakeFiles/tinywechat-client.dir/flags.make
+CMakeFiles/tinywechat-client.dir/ui/ConversationListWidget.cpp.o: /home/jack/Projects/TinyWeChat/wx-client/ui/ConversationListWidget.cpp
+CMakeFiles/tinywechat-client.dir/ui/ConversationListWidget.cpp.o: CMakeFiles/tinywechat-client.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jack/Projects/TinyWeChat/wx-client/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/tinywechat-client.dir/ui/ConversationListWidget.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/tinywechat-client.dir/ui/ConversationListWidget.cpp.o -MF CMakeFiles/tinywechat-client.dir/ui/ConversationListWidget.cpp.o.d -o CMakeFiles/tinywechat-client.dir/ui/ConversationListWidget.cpp.o -c /home/jack/Projects/TinyWeChat/wx-client/ui/ConversationListWidget.cpp
+
+CMakeFiles/tinywechat-client.dir/ui/ConversationListWidget.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/tinywechat-client.dir/ui/ConversationListWidget.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jack/Projects/TinyWeChat/wx-client/ui/ConversationListWidget.cpp > CMakeFiles/tinywechat-client.dir/ui/ConversationListWidget.cpp.i
+
+CMakeFiles/tinywechat-client.dir/ui/ConversationListWidget.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/tinywechat-client.dir/ui/ConversationListWidget.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jack/Projects/TinyWeChat/wx-client/ui/ConversationListWidget.cpp -o CMakeFiles/tinywechat-client.dir/ui/ConversationListWidget.cpp.s
+
+CMakeFiles/tinywechat-client.dir/ui/FriendListWidget.cpp.o: CMakeFiles/tinywechat-client.dir/flags.make
+CMakeFiles/tinywechat-client.dir/ui/FriendListWidget.cpp.o: /home/jack/Projects/TinyWeChat/wx-client/ui/FriendListWidget.cpp
+CMakeFiles/tinywechat-client.dir/ui/FriendListWidget.cpp.o: CMakeFiles/tinywechat-client.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jack/Projects/TinyWeChat/wx-client/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/tinywechat-client.dir/ui/FriendListWidget.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/tinywechat-client.dir/ui/FriendListWidget.cpp.o -MF CMakeFiles/tinywechat-client.dir/ui/FriendListWidget.cpp.o.d -o CMakeFiles/tinywechat-client.dir/ui/FriendListWidget.cpp.o -c /home/jack/Projects/TinyWeChat/wx-client/ui/FriendListWidget.cpp
+
+CMakeFiles/tinywechat-client.dir/ui/FriendListWidget.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/tinywechat-client.dir/ui/FriendListWidget.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jack/Projects/TinyWeChat/wx-client/ui/FriendListWidget.cpp > CMakeFiles/tinywechat-client.dir/ui/FriendListWidget.cpp.i
+
+CMakeFiles/tinywechat-client.dir/ui/FriendListWidget.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/tinywechat-client.dir/ui/FriendListWidget.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jack/Projects/TinyWeChat/wx-client/ui/FriendListWidget.cpp -o CMakeFiles/tinywechat-client.dir/ui/FriendListWidget.cpp.s
+
+CMakeFiles/tinywechat-client.dir/ui/GroupListWidget.cpp.o: CMakeFiles/tinywechat-client.dir/flags.make
+CMakeFiles/tinywechat-client.dir/ui/GroupListWidget.cpp.o: /home/jack/Projects/TinyWeChat/wx-client/ui/GroupListWidget.cpp
+CMakeFiles/tinywechat-client.dir/ui/GroupListWidget.cpp.o: CMakeFiles/tinywechat-client.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jack/Projects/TinyWeChat/wx-client/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/tinywechat-client.dir/ui/GroupListWidget.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/tinywechat-client.dir/ui/GroupListWidget.cpp.o -MF CMakeFiles/tinywechat-client.dir/ui/GroupListWidget.cpp.o.d -o CMakeFiles/tinywechat-client.dir/ui/GroupListWidget.cpp.o -c /home/jack/Projects/TinyWeChat/wx-client/ui/GroupListWidget.cpp
+
+CMakeFiles/tinywechat-client.dir/ui/GroupListWidget.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/tinywechat-client.dir/ui/GroupListWidget.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jack/Projects/TinyWeChat/wx-client/ui/GroupListWidget.cpp > CMakeFiles/tinywechat-client.dir/ui/GroupListWidget.cpp.i
+
+CMakeFiles/tinywechat-client.dir/ui/GroupListWidget.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/tinywechat-client.dir/ui/GroupListWidget.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jack/Projects/TinyWeChat/wx-client/ui/GroupListWidget.cpp -o CMakeFiles/tinywechat-client.dir/ui/GroupListWidget.cpp.s
+
+CMakeFiles/tinywechat-client.dir/ui/GroupCreateDialog.cpp.o: CMakeFiles/tinywechat-client.dir/flags.make
+CMakeFiles/tinywechat-client.dir/ui/GroupCreateDialog.cpp.o: /home/jack/Projects/TinyWeChat/wx-client/ui/GroupCreateDialog.cpp
+CMakeFiles/tinywechat-client.dir/ui/GroupCreateDialog.cpp.o: CMakeFiles/tinywechat-client.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jack/Projects/TinyWeChat/wx-client/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/tinywechat-client.dir/ui/GroupCreateDialog.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/tinywechat-client.dir/ui/GroupCreateDialog.cpp.o -MF CMakeFiles/tinywechat-client.dir/ui/GroupCreateDialog.cpp.o.d -o CMakeFiles/tinywechat-client.dir/ui/GroupCreateDialog.cpp.o -c /home/jack/Projects/TinyWeChat/wx-client/ui/GroupCreateDialog.cpp
+
+CMakeFiles/tinywechat-client.dir/ui/GroupCreateDialog.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/tinywechat-client.dir/ui/GroupCreateDialog.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jack/Projects/TinyWeChat/wx-client/ui/GroupCreateDialog.cpp > CMakeFiles/tinywechat-client.dir/ui/GroupCreateDialog.cpp.i
+
+CMakeFiles/tinywechat-client.dir/ui/GroupCreateDialog.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/tinywechat-client.dir/ui/GroupCreateDialog.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jack/Projects/TinyWeChat/wx-client/ui/GroupCreateDialog.cpp -o CMakeFiles/tinywechat-client.dir/ui/GroupCreateDialog.cpp.s
+
+CMakeFiles/tinywechat-client.dir/ui/GroupChatWidget.cpp.o: CMakeFiles/tinywechat-client.dir/flags.make
+CMakeFiles/tinywechat-client.dir/ui/GroupChatWidget.cpp.o: /home/jack/Projects/TinyWeChat/wx-client/ui/GroupChatWidget.cpp
+CMakeFiles/tinywechat-client.dir/ui/GroupChatWidget.cpp.o: CMakeFiles/tinywechat-client.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jack/Projects/TinyWeChat/wx-client/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/tinywechat-client.dir/ui/GroupChatWidget.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/tinywechat-client.dir/ui/GroupChatWidget.cpp.o -MF CMakeFiles/tinywechat-client.dir/ui/GroupChatWidget.cpp.o.d -o CMakeFiles/tinywechat-client.dir/ui/GroupChatWidget.cpp.o -c /home/jack/Projects/TinyWeChat/wx-client/ui/GroupChatWidget.cpp
+
+CMakeFiles/tinywechat-client.dir/ui/GroupChatWidget.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/tinywechat-client.dir/ui/GroupChatWidget.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jack/Projects/TinyWeChat/wx-client/ui/GroupChatWidget.cpp > CMakeFiles/tinywechat-client.dir/ui/GroupChatWidget.cpp.i
+
+CMakeFiles/tinywechat-client.dir/ui/GroupChatWidget.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/tinywechat-client.dir/ui/GroupChatWidget.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jack/Projects/TinyWeChat/wx-client/ui/GroupChatWidget.cpp -o CMakeFiles/tinywechat-client.dir/ui/GroupChatWidget.cpp.s
+
+CMakeFiles/tinywechat-client.dir/ui/EmojiPicker.cpp.o: CMakeFiles/tinywechat-client.dir/flags.make
+CMakeFiles/tinywechat-client.dir/ui/EmojiPicker.cpp.o: /home/jack/Projects/TinyWeChat/wx-client/ui/EmojiPicker.cpp
+CMakeFiles/tinywechat-client.dir/ui/EmojiPicker.cpp.o: CMakeFiles/tinywechat-client.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jack/Projects/TinyWeChat/wx-client/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/tinywechat-client.dir/ui/EmojiPicker.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/tinywechat-client.dir/ui/EmojiPicker.cpp.o -MF CMakeFiles/tinywechat-client.dir/ui/EmojiPicker.cpp.o.d -o CMakeFiles/tinywechat-client.dir/ui/EmojiPicker.cpp.o -c /home/jack/Projects/TinyWeChat/wx-client/ui/EmojiPicker.cpp
+
+CMakeFiles/tinywechat-client.dir/ui/EmojiPicker.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/tinywechat-client.dir/ui/EmojiPicker.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jack/Projects/TinyWeChat/wx-client/ui/EmojiPicker.cpp > CMakeFiles/tinywechat-client.dir/ui/EmojiPicker.cpp.i
+
+CMakeFiles/tinywechat-client.dir/ui/EmojiPicker.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/tinywechat-client.dir/ui/EmojiPicker.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jack/Projects/TinyWeChat/wx-client/ui/EmojiPicker.cpp -o CMakeFiles/tinywechat-client.dir/ui/EmojiPicker.cpp.s
+
+CMakeFiles/tinywechat-client.dir/ui/AvatarLabel.cpp.o: CMakeFiles/tinywechat-client.dir/flags.make
+CMakeFiles/tinywechat-client.dir/ui/AvatarLabel.cpp.o: /home/jack/Projects/TinyWeChat/wx-client/ui/AvatarLabel.cpp
+CMakeFiles/tinywechat-client.dir/ui/AvatarLabel.cpp.o: CMakeFiles/tinywechat-client.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jack/Projects/TinyWeChat/wx-client/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/tinywechat-client.dir/ui/AvatarLabel.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/tinywechat-client.dir/ui/AvatarLabel.cpp.o -MF CMakeFiles/tinywechat-client.dir/ui/AvatarLabel.cpp.o.d -o CMakeFiles/tinywechat-client.dir/ui/AvatarLabel.cpp.o -c /home/jack/Projects/TinyWeChat/wx-client/ui/AvatarLabel.cpp
+
+CMakeFiles/tinywechat-client.dir/ui/AvatarLabel.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/tinywechat-client.dir/ui/AvatarLabel.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jack/Projects/TinyWeChat/wx-client/ui/AvatarLabel.cpp > CMakeFiles/tinywechat-client.dir/ui/AvatarLabel.cpp.i
+
+CMakeFiles/tinywechat-client.dir/ui/AvatarLabel.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/tinywechat-client.dir/ui/AvatarLabel.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jack/Projects/TinyWeChat/wx-client/ui/AvatarLabel.cpp -o CMakeFiles/tinywechat-client.dir/ui/AvatarLabel.cpp.s
+
+CMakeFiles/tinywechat-client.dir/ui/AvatarSelectDialog.cpp.o: CMakeFiles/tinywechat-client.dir/flags.make
+CMakeFiles/tinywechat-client.dir/ui/AvatarSelectDialog.cpp.o: /home/jack/Projects/TinyWeChat/wx-client/ui/AvatarSelectDialog.cpp
+CMakeFiles/tinywechat-client.dir/ui/AvatarSelectDialog.cpp.o: CMakeFiles/tinywechat-client.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jack/Projects/TinyWeChat/wx-client/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/tinywechat-client.dir/ui/AvatarSelectDialog.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/tinywechat-client.dir/ui/AvatarSelectDialog.cpp.o -MF CMakeFiles/tinywechat-client.dir/ui/AvatarSelectDialog.cpp.o.d -o CMakeFiles/tinywechat-client.dir/ui/AvatarSelectDialog.cpp.o -c /home/jack/Projects/TinyWeChat/wx-client/ui/AvatarSelectDialog.cpp
+
+CMakeFiles/tinywechat-client.dir/ui/AvatarSelectDialog.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/tinywechat-client.dir/ui/AvatarSelectDialog.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jack/Projects/TinyWeChat/wx-client/ui/AvatarSelectDialog.cpp > CMakeFiles/tinywechat-client.dir/ui/AvatarSelectDialog.cpp.i
+
+CMakeFiles/tinywechat-client.dir/ui/AvatarSelectDialog.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/tinywechat-client.dir/ui/AvatarSelectDialog.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jack/Projects/TinyWeChat/wx-client/ui/AvatarSelectDialog.cpp -o CMakeFiles/tinywechat-client.dir/ui/AvatarSelectDialog.cpp.s
+
+CMakeFiles/tinywechat-client.dir/ui/MainHubWidget.cpp.o: CMakeFiles/tinywechat-client.dir/flags.make
+CMakeFiles/tinywechat-client.dir/ui/MainHubWidget.cpp.o: /home/jack/Projects/TinyWeChat/wx-client/ui/MainHubWidget.cpp
+CMakeFiles/tinywechat-client.dir/ui/MainHubWidget.cpp.o: CMakeFiles/tinywechat-client.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jack/Projects/TinyWeChat/wx-client/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/tinywechat-client.dir/ui/MainHubWidget.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/tinywechat-client.dir/ui/MainHubWidget.cpp.o -MF CMakeFiles/tinywechat-client.dir/ui/MainHubWidget.cpp.o.d -o CMakeFiles/tinywechat-client.dir/ui/MainHubWidget.cpp.o -c /home/jack/Projects/TinyWeChat/wx-client/ui/MainHubWidget.cpp
+
+CMakeFiles/tinywechat-client.dir/ui/MainHubWidget.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/tinywechat-client.dir/ui/MainHubWidget.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jack/Projects/TinyWeChat/wx-client/ui/MainHubWidget.cpp > CMakeFiles/tinywechat-client.dir/ui/MainHubWidget.cpp.i
+
+CMakeFiles/tinywechat-client.dir/ui/MainHubWidget.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/tinywechat-client.dir/ui/MainHubWidget.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jack/Projects/TinyWeChat/wx-client/ui/MainHubWidget.cpp -o CMakeFiles/tinywechat-client.dir/ui/MainHubWidget.cpp.s
+
 CMakeFiles/tinywechat-client.dir/ui/MainWindow.cpp.o: CMakeFiles/tinywechat-client.dir/flags.make
 CMakeFiles/tinywechat-client.dir/ui/MainWindow.cpp.o: /home/jack/Projects/TinyWeChat/wx-client/ui/MainWindow.cpp
 CMakeFiles/tinywechat-client.dir/ui/MainWindow.cpp.o: CMakeFiles/tinywechat-client.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jack/Projects/TinyWeChat/wx-client/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/tinywechat-client.dir/ui/MainWindow.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jack/Projects/TinyWeChat/wx-client/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object CMakeFiles/tinywechat-client.dir/ui/MainWindow.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/tinywechat-client.dir/ui/MainWindow.cpp.o -MF CMakeFiles/tinywechat-client.dir/ui/MainWindow.cpp.o.d -o CMakeFiles/tinywechat-client.dir/ui/MainWindow.cpp.o -c /home/jack/Projects/TinyWeChat/wx-client/ui/MainWindow.cpp
 
 CMakeFiles/tinywechat-client.dir/ui/MainWindow.cpp.i: cmake_force
@@ -189,7 +329,17 @@ tinywechat__client_OBJECTS = \
 "CMakeFiles/tinywechat-client.dir/network/WeChatSocket.cpp.o" \
 "CMakeFiles/tinywechat-client.dir/protocol/MessageBuilder.cpp.o" \
 "CMakeFiles/tinywechat-client.dir/ui/LoginWidget.cpp.o" \
+"CMakeFiles/tinywechat-client.dir/ui/RegisterWidget.cpp.o" \
 "CMakeFiles/tinywechat-client.dir/ui/ChatWidget.cpp.o" \
+"CMakeFiles/tinywechat-client.dir/ui/ConversationListWidget.cpp.o" \
+"CMakeFiles/tinywechat-client.dir/ui/FriendListWidget.cpp.o" \
+"CMakeFiles/tinywechat-client.dir/ui/GroupListWidget.cpp.o" \
+"CMakeFiles/tinywechat-client.dir/ui/GroupCreateDialog.cpp.o" \
+"CMakeFiles/tinywechat-client.dir/ui/GroupChatWidget.cpp.o" \
+"CMakeFiles/tinywechat-client.dir/ui/EmojiPicker.cpp.o" \
+"CMakeFiles/tinywechat-client.dir/ui/AvatarLabel.cpp.o" \
+"CMakeFiles/tinywechat-client.dir/ui/AvatarSelectDialog.cpp.o" \
+"CMakeFiles/tinywechat-client.dir/ui/MainHubWidget.cpp.o" \
 "CMakeFiles/tinywechat-client.dir/ui/MainWindow.cpp.o"
 
 # External object files for target tinywechat-client
@@ -201,7 +351,17 @@ tinywechat-client: CMakeFiles/tinywechat-client.dir/network/FrameCodec.cpp.o
 tinywechat-client: CMakeFiles/tinywechat-client.dir/network/WeChatSocket.cpp.o
 tinywechat-client: CMakeFiles/tinywechat-client.dir/protocol/MessageBuilder.cpp.o
 tinywechat-client: CMakeFiles/tinywechat-client.dir/ui/LoginWidget.cpp.o
+tinywechat-client: CMakeFiles/tinywechat-client.dir/ui/RegisterWidget.cpp.o
 tinywechat-client: CMakeFiles/tinywechat-client.dir/ui/ChatWidget.cpp.o
+tinywechat-client: CMakeFiles/tinywechat-client.dir/ui/ConversationListWidget.cpp.o
+tinywechat-client: CMakeFiles/tinywechat-client.dir/ui/FriendListWidget.cpp.o
+tinywechat-client: CMakeFiles/tinywechat-client.dir/ui/GroupListWidget.cpp.o
+tinywechat-client: CMakeFiles/tinywechat-client.dir/ui/GroupCreateDialog.cpp.o
+tinywechat-client: CMakeFiles/tinywechat-client.dir/ui/GroupChatWidget.cpp.o
+tinywechat-client: CMakeFiles/tinywechat-client.dir/ui/EmojiPicker.cpp.o
+tinywechat-client: CMakeFiles/tinywechat-client.dir/ui/AvatarLabel.cpp.o
+tinywechat-client: CMakeFiles/tinywechat-client.dir/ui/AvatarSelectDialog.cpp.o
+tinywechat-client: CMakeFiles/tinywechat-client.dir/ui/MainHubWidget.cpp.o
 tinywechat-client: CMakeFiles/tinywechat-client.dir/ui/MainWindow.cpp.o
 tinywechat-client: CMakeFiles/tinywechat-client.dir/build.make
 tinywechat-client: /usr/lib/aarch64-linux-gnu/libQt6Widgets.so.6.4.2
@@ -211,7 +371,7 @@ tinywechat-client: /usr/lib/aarch64-linux-gnu/libGLX.so
 tinywechat-client: /usr/lib/aarch64-linux-gnu/libOpenGL.so
 tinywechat-client: /usr/lib/aarch64-linux-gnu/libQt6Core.so.6.4.2
 tinywechat-client: CMakeFiles/tinywechat-client.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/jack/Projects/TinyWeChat/wx-client/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Linking CXX executable tinywechat-client"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/jack/Projects/TinyWeChat/wx-client/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Linking CXX executable tinywechat-client"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/tinywechat-client.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

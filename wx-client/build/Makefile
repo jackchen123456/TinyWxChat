@@ -275,6 +275,54 @@ tinywechat-client_autogen/mocs_compilation.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinywechat-client.dir/build.make CMakeFiles/tinywechat-client.dir/tinywechat-client_autogen/mocs_compilation.cpp.s
 .PHONY : tinywechat-client_autogen/mocs_compilation.cpp.s
 
+ui/AvatarLabel.o: ui/AvatarLabel.cpp.o
+.PHONY : ui/AvatarLabel.o
+
+# target to build an object file
+ui/AvatarLabel.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinywechat-client.dir/build.make CMakeFiles/tinywechat-client.dir/ui/AvatarLabel.cpp.o
+.PHONY : ui/AvatarLabel.cpp.o
+
+ui/AvatarLabel.i: ui/AvatarLabel.cpp.i
+.PHONY : ui/AvatarLabel.i
+
+# target to preprocess a source file
+ui/AvatarLabel.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinywechat-client.dir/build.make CMakeFiles/tinywechat-client.dir/ui/AvatarLabel.cpp.i
+.PHONY : ui/AvatarLabel.cpp.i
+
+ui/AvatarLabel.s: ui/AvatarLabel.cpp.s
+.PHONY : ui/AvatarLabel.s
+
+# target to generate assembly for a file
+ui/AvatarLabel.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinywechat-client.dir/build.make CMakeFiles/tinywechat-client.dir/ui/AvatarLabel.cpp.s
+.PHONY : ui/AvatarLabel.cpp.s
+
+ui/AvatarSelectDialog.o: ui/AvatarSelectDialog.cpp.o
+.PHONY : ui/AvatarSelectDialog.o
+
+# target to build an object file
+ui/AvatarSelectDialog.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinywechat-client.dir/build.make CMakeFiles/tinywechat-client.dir/ui/AvatarSelectDialog.cpp.o
+.PHONY : ui/AvatarSelectDialog.cpp.o
+
+ui/AvatarSelectDialog.i: ui/AvatarSelectDialog.cpp.i
+.PHONY : ui/AvatarSelectDialog.i
+
+# target to preprocess a source file
+ui/AvatarSelectDialog.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinywechat-client.dir/build.make CMakeFiles/tinywechat-client.dir/ui/AvatarSelectDialog.cpp.i
+.PHONY : ui/AvatarSelectDialog.cpp.i
+
+ui/AvatarSelectDialog.s: ui/AvatarSelectDialog.cpp.s
+.PHONY : ui/AvatarSelectDialog.s
+
+# target to generate assembly for a file
+ui/AvatarSelectDialog.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinywechat-client.dir/build.make CMakeFiles/tinywechat-client.dir/ui/AvatarSelectDialog.cpp.s
+.PHONY : ui/AvatarSelectDialog.cpp.s
+
 ui/ChatWidget.o: ui/ChatWidget.cpp.o
 .PHONY : ui/ChatWidget.o
 
@@ -298,6 +346,150 @@ ui/ChatWidget.s: ui/ChatWidget.cpp.s
 ui/ChatWidget.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinywechat-client.dir/build.make CMakeFiles/tinywechat-client.dir/ui/ChatWidget.cpp.s
 .PHONY : ui/ChatWidget.cpp.s
+
+ui/ConversationListWidget.o: ui/ConversationListWidget.cpp.o
+.PHONY : ui/ConversationListWidget.o
+
+# target to build an object file
+ui/ConversationListWidget.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinywechat-client.dir/build.make CMakeFiles/tinywechat-client.dir/ui/ConversationListWidget.cpp.o
+.PHONY : ui/ConversationListWidget.cpp.o
+
+ui/ConversationListWidget.i: ui/ConversationListWidget.cpp.i
+.PHONY : ui/ConversationListWidget.i
+
+# target to preprocess a source file
+ui/ConversationListWidget.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinywechat-client.dir/build.make CMakeFiles/tinywechat-client.dir/ui/ConversationListWidget.cpp.i
+.PHONY : ui/ConversationListWidget.cpp.i
+
+ui/ConversationListWidget.s: ui/ConversationListWidget.cpp.s
+.PHONY : ui/ConversationListWidget.s
+
+# target to generate assembly for a file
+ui/ConversationListWidget.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinywechat-client.dir/build.make CMakeFiles/tinywechat-client.dir/ui/ConversationListWidget.cpp.s
+.PHONY : ui/ConversationListWidget.cpp.s
+
+ui/EmojiPicker.o: ui/EmojiPicker.cpp.o
+.PHONY : ui/EmojiPicker.o
+
+# target to build an object file
+ui/EmojiPicker.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinywechat-client.dir/build.make CMakeFiles/tinywechat-client.dir/ui/EmojiPicker.cpp.o
+.PHONY : ui/EmojiPicker.cpp.o
+
+ui/EmojiPicker.i: ui/EmojiPicker.cpp.i
+.PHONY : ui/EmojiPicker.i
+
+# target to preprocess a source file
+ui/EmojiPicker.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinywechat-client.dir/build.make CMakeFiles/tinywechat-client.dir/ui/EmojiPicker.cpp.i
+.PHONY : ui/EmojiPicker.cpp.i
+
+ui/EmojiPicker.s: ui/EmojiPicker.cpp.s
+.PHONY : ui/EmojiPicker.s
+
+# target to generate assembly for a file
+ui/EmojiPicker.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinywechat-client.dir/build.make CMakeFiles/tinywechat-client.dir/ui/EmojiPicker.cpp.s
+.PHONY : ui/EmojiPicker.cpp.s
+
+ui/FriendListWidget.o: ui/FriendListWidget.cpp.o
+.PHONY : ui/FriendListWidget.o
+
+# target to build an object file
+ui/FriendListWidget.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinywechat-client.dir/build.make CMakeFiles/tinywechat-client.dir/ui/FriendListWidget.cpp.o
+.PHONY : ui/FriendListWidget.cpp.o
+
+ui/FriendListWidget.i: ui/FriendListWidget.cpp.i
+.PHONY : ui/FriendListWidget.i
+
+# target to preprocess a source file
+ui/FriendListWidget.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinywechat-client.dir/build.make CMakeFiles/tinywechat-client.dir/ui/FriendListWidget.cpp.i
+.PHONY : ui/FriendListWidget.cpp.i
+
+ui/FriendListWidget.s: ui/FriendListWidget.cpp.s
+.PHONY : ui/FriendListWidget.s
+
+# target to generate assembly for a file
+ui/FriendListWidget.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinywechat-client.dir/build.make CMakeFiles/tinywechat-client.dir/ui/FriendListWidget.cpp.s
+.PHONY : ui/FriendListWidget.cpp.s
+
+ui/GroupChatWidget.o: ui/GroupChatWidget.cpp.o
+.PHONY : ui/GroupChatWidget.o
+
+# target to build an object file
+ui/GroupChatWidget.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinywechat-client.dir/build.make CMakeFiles/tinywechat-client.dir/ui/GroupChatWidget.cpp.o
+.PHONY : ui/GroupChatWidget.cpp.o
+
+ui/GroupChatWidget.i: ui/GroupChatWidget.cpp.i
+.PHONY : ui/GroupChatWidget.i
+
+# target to preprocess a source file
+ui/GroupChatWidget.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinywechat-client.dir/build.make CMakeFiles/tinywechat-client.dir/ui/GroupChatWidget.cpp.i
+.PHONY : ui/GroupChatWidget.cpp.i
+
+ui/GroupChatWidget.s: ui/GroupChatWidget.cpp.s
+.PHONY : ui/GroupChatWidget.s
+
+# target to generate assembly for a file
+ui/GroupChatWidget.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinywechat-client.dir/build.make CMakeFiles/tinywechat-client.dir/ui/GroupChatWidget.cpp.s
+.PHONY : ui/GroupChatWidget.cpp.s
+
+ui/GroupCreateDialog.o: ui/GroupCreateDialog.cpp.o
+.PHONY : ui/GroupCreateDialog.o
+
+# target to build an object file
+ui/GroupCreateDialog.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinywechat-client.dir/build.make CMakeFiles/tinywechat-client.dir/ui/GroupCreateDialog.cpp.o
+.PHONY : ui/GroupCreateDialog.cpp.o
+
+ui/GroupCreateDialog.i: ui/GroupCreateDialog.cpp.i
+.PHONY : ui/GroupCreateDialog.i
+
+# target to preprocess a source file
+ui/GroupCreateDialog.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinywechat-client.dir/build.make CMakeFiles/tinywechat-client.dir/ui/GroupCreateDialog.cpp.i
+.PHONY : ui/GroupCreateDialog.cpp.i
+
+ui/GroupCreateDialog.s: ui/GroupCreateDialog.cpp.s
+.PHONY : ui/GroupCreateDialog.s
+
+# target to generate assembly for a file
+ui/GroupCreateDialog.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinywechat-client.dir/build.make CMakeFiles/tinywechat-client.dir/ui/GroupCreateDialog.cpp.s
+.PHONY : ui/GroupCreateDialog.cpp.s
+
+ui/GroupListWidget.o: ui/GroupListWidget.cpp.o
+.PHONY : ui/GroupListWidget.o
+
+# target to build an object file
+ui/GroupListWidget.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinywechat-client.dir/build.make CMakeFiles/tinywechat-client.dir/ui/GroupListWidget.cpp.o
+.PHONY : ui/GroupListWidget.cpp.o
+
+ui/GroupListWidget.i: ui/GroupListWidget.cpp.i
+.PHONY : ui/GroupListWidget.i
+
+# target to preprocess a source file
+ui/GroupListWidget.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinywechat-client.dir/build.make CMakeFiles/tinywechat-client.dir/ui/GroupListWidget.cpp.i
+.PHONY : ui/GroupListWidget.cpp.i
+
+ui/GroupListWidget.s: ui/GroupListWidget.cpp.s
+.PHONY : ui/GroupListWidget.s
+
+# target to generate assembly for a file
+ui/GroupListWidget.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinywechat-client.dir/build.make CMakeFiles/tinywechat-client.dir/ui/GroupListWidget.cpp.s
+.PHONY : ui/GroupListWidget.cpp.s
 
 ui/LoginWidget.o: ui/LoginWidget.cpp.o
 .PHONY : ui/LoginWidget.o
@@ -323,6 +515,30 @@ ui/LoginWidget.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinywechat-client.dir/build.make CMakeFiles/tinywechat-client.dir/ui/LoginWidget.cpp.s
 .PHONY : ui/LoginWidget.cpp.s
 
+ui/MainHubWidget.o: ui/MainHubWidget.cpp.o
+.PHONY : ui/MainHubWidget.o
+
+# target to build an object file
+ui/MainHubWidget.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinywechat-client.dir/build.make CMakeFiles/tinywechat-client.dir/ui/MainHubWidget.cpp.o
+.PHONY : ui/MainHubWidget.cpp.o
+
+ui/MainHubWidget.i: ui/MainHubWidget.cpp.i
+.PHONY : ui/MainHubWidget.i
+
+# target to preprocess a source file
+ui/MainHubWidget.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinywechat-client.dir/build.make CMakeFiles/tinywechat-client.dir/ui/MainHubWidget.cpp.i
+.PHONY : ui/MainHubWidget.cpp.i
+
+ui/MainHubWidget.s: ui/MainHubWidget.cpp.s
+.PHONY : ui/MainHubWidget.s
+
+# target to generate assembly for a file
+ui/MainHubWidget.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinywechat-client.dir/build.make CMakeFiles/tinywechat-client.dir/ui/MainHubWidget.cpp.s
+.PHONY : ui/MainHubWidget.cpp.s
+
 ui/MainWindow.o: ui/MainWindow.cpp.o
 .PHONY : ui/MainWindow.o
 
@@ -346,6 +562,30 @@ ui/MainWindow.s: ui/MainWindow.cpp.s
 ui/MainWindow.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinywechat-client.dir/build.make CMakeFiles/tinywechat-client.dir/ui/MainWindow.cpp.s
 .PHONY : ui/MainWindow.cpp.s
+
+ui/RegisterWidget.o: ui/RegisterWidget.cpp.o
+.PHONY : ui/RegisterWidget.o
+
+# target to build an object file
+ui/RegisterWidget.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinywechat-client.dir/build.make CMakeFiles/tinywechat-client.dir/ui/RegisterWidget.cpp.o
+.PHONY : ui/RegisterWidget.cpp.o
+
+ui/RegisterWidget.i: ui/RegisterWidget.cpp.i
+.PHONY : ui/RegisterWidget.i
+
+# target to preprocess a source file
+ui/RegisterWidget.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinywechat-client.dir/build.make CMakeFiles/tinywechat-client.dir/ui/RegisterWidget.cpp.i
+.PHONY : ui/RegisterWidget.cpp.i
+
+ui/RegisterWidget.s: ui/RegisterWidget.cpp.s
+.PHONY : ui/RegisterWidget.s
+
+# target to generate assembly for a file
+ui/RegisterWidget.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tinywechat-client.dir/build.make CMakeFiles/tinywechat-client.dir/ui/RegisterWidget.cpp.s
+.PHONY : ui/RegisterWidget.cpp.s
 
 # Help Target
 help:
@@ -373,15 +613,45 @@ help:
 	@echo "... tinywechat-client_autogen/mocs_compilation.o"
 	@echo "... tinywechat-client_autogen/mocs_compilation.i"
 	@echo "... tinywechat-client_autogen/mocs_compilation.s"
+	@echo "... ui/AvatarLabel.o"
+	@echo "... ui/AvatarLabel.i"
+	@echo "... ui/AvatarLabel.s"
+	@echo "... ui/AvatarSelectDialog.o"
+	@echo "... ui/AvatarSelectDialog.i"
+	@echo "... ui/AvatarSelectDialog.s"
 	@echo "... ui/ChatWidget.o"
 	@echo "... ui/ChatWidget.i"
 	@echo "... ui/ChatWidget.s"
+	@echo "... ui/ConversationListWidget.o"
+	@echo "... ui/ConversationListWidget.i"
+	@echo "... ui/ConversationListWidget.s"
+	@echo "... ui/EmojiPicker.o"
+	@echo "... ui/EmojiPicker.i"
+	@echo "... ui/EmojiPicker.s"
+	@echo "... ui/FriendListWidget.o"
+	@echo "... ui/FriendListWidget.i"
+	@echo "... ui/FriendListWidget.s"
+	@echo "... ui/GroupChatWidget.o"
+	@echo "... ui/GroupChatWidget.i"
+	@echo "... ui/GroupChatWidget.s"
+	@echo "... ui/GroupCreateDialog.o"
+	@echo "... ui/GroupCreateDialog.i"
+	@echo "... ui/GroupCreateDialog.s"
+	@echo "... ui/GroupListWidget.o"
+	@echo "... ui/GroupListWidget.i"
+	@echo "... ui/GroupListWidget.s"
 	@echo "... ui/LoginWidget.o"
 	@echo "... ui/LoginWidget.i"
 	@echo "... ui/LoginWidget.s"
+	@echo "... ui/MainHubWidget.o"
+	@echo "... ui/MainHubWidget.i"
+	@echo "... ui/MainHubWidget.s"
 	@echo "... ui/MainWindow.o"
 	@echo "... ui/MainWindow.i"
 	@echo "... ui/MainWindow.s"
+	@echo "... ui/RegisterWidget.o"
+	@echo "... ui/RegisterWidget.i"
+	@echo "... ui/RegisterWidget.s"
 .PHONY : help
 
 

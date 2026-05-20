@@ -1,7 +1,13 @@
 #include "ChatWidget.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-#include <QDateTime>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QImage>
+#include <QPixmap>
+#include <QBuffer>
+#include <QByteArray>
+#include "EmojiPicker.h"
 #include <QDebug>
 
 ChatWidget::ChatWidget(WeChatSocket* socket, int myUserId,
@@ -12,80 +18,144 @@ ChatWidget::ChatWidget(WeChatSocket* socket, int myUserId,
     , m_myNickname(myNickname)
 {
     auto* mainLayout = new QVBoxLayout(this);
-    mainLayout->setContentsMargins(8, 8, 8, 8);
+    mainLayout->setContentsMargins(0, 0, 0, 0);
+    mainLayout->setSpacing(0);
 
-    // ── 顶部：目标用户 ID ──
-    auto* topLayout = new QHBoxLayout();
-    topLayout->addWidget(new QLabel("发送给用户ID:"));
-    m_targetEdit = new QLineEdit();
-    m_targetEdit->setPlaceholderText("输入目标用户ID（如 2）");
-    m_targetEdit->setMaximumWidth(80);
-    topLayout->addWidget(m_targetEdit);
-    topLayout->addStretch();
+    // ── 顶部：标题 + 返回 ──
+    auto* topBar = new QHBoxLayout();
+    topBar->setContentsMargins(8, 4, 8, 4);
+    m_backBtn = new QPushButton("← 返回");
+    m_backBtn->setFlat(true);
+    m_backBtn->setStyleSheet("font-size: 14px; color: #333; border: none;");
+    m_titleLabel = new QLabel("请选择会话");
+    m_titleLabel->setStyleSheet("font-size: 16px; font-weight: bold;");
+    topBar->addWidget(m_backBtn);
+    topBar->addWidget(m_titleLabel, 1);
+    mainLayout->addLayout(topBar);
 
-    m_statusLabel = new QLabel("已连接");
-    m_statusLabel->setStyleSheet("color: #27ae60;");
-    topLayout->addWidget(m_statusLabel);
-    mainLayout->addLayout(topLayout);
+    auto* sep = new QFrame();
+    sep->setFrameShape(QFrame::HLine);
+    sep->setStyleSheet("color: #ddd;");
+    mainLayout->addWidget(sep);
 
     // ── 消息列表 ──
     m_messageList = new QListWidget();
     m_messageList->setStyleSheet(
-        "QListWidget { border: 1px solid #ddd; border-radius: 4px; background: #f5f5f5; }"
+        "QListWidget { border: none; background: #f0f0f0; }"
     );
-    mainLayout->addWidget(m_messageList, 1); // stretch=1
+    mainLayout->addWidget(m_messageList, 1);
 
-    // ── 底部：输入框 + 发送按钮 ──
-    auto* bottomLayout = new QHBoxLayout();
+    // ── 底部输入 ──
+    auto* bottomBar = new QHBoxLayout();
+    bottomBar->setContentsMargins(8, 6, 8, 6);
+
+    auto* emojiBtn = new QPushButton("😊");
+    emojiBtn->setFixedSize(34, 34);
+    emojiBtn->setStyleSheet("font-size: 18px; border: none;");
+    bottomBar->addWidget(emojiBtn);
+
+    auto* imageBtn = new QPushButton("📎");
+    imageBtn->setFixedSize(34, 34);
+    imageBtn->setStyleSheet("font-size: 16px; border: none;");
+    bottomBar->addWidget(imageBtn);
+
     m_inputEdit = new QLineEdit();
     m_inputEdit->setPlaceholderText("输入消息...");
-    m_inputEdit->setMinimumHeight(32);
-    bottomLayout->addWidget(m_inputEdit, 1);
-
+    m_inputEdit->setMinimumHeight(34);
     m_sendBtn = new QPushButton("发送");
-    m_sendBtn->setMinimumHeight(32);
-    m_sendBtn->setMinimumWidth(70);
-    bottomLayout->addWidget(m_sendBtn);
-    mainLayout->addLayout(bottomLayout);
+    m_sendBtn->setMinimumHeight(34);
+    m_sendBtn->setMinimumWidth(60);
+    bottomBar->addWidget(m_inputEdit, 1);
+    bottomBar->addWidget(m_sendBtn);
+    mainLayout->addLayout(bottomBar);
 
-    // 信号连接
+    // 信号
     connect(m_sendBtn, &QPushButton::clicked, this, &ChatWidget::onSendClicked);
     connect(m_inputEdit, &QLineEdit::returnPressed, this, &ChatWidget::onSendClicked);
+    connect(m_backBtn, &QPushButton::clicked, this, &ChatWidget::back);
     connect(m_socket, &WeChatSocket::frameReceived, this, &ChatWidget::onFrameReceived);
     connect(m_socket, &WeChatSocket::connectionFailed, this, &ChatWidget::onConnectionFailed);
 
-    appendSystem(QString("已登录：%1 (ID: %2)").arg(m_myNickname).arg(m_myUserId));
-    appendSystem("请输入目标用户ID后开始聊天");
+    // 表情选择器
+    connect(emojiBtn, &QPushButton::clicked, this, [this, emojiBtn]() {
+        auto* picker = new EmojiPicker(emojiBtn);
+        picker->move(emojiBtn->mapToGlobal(QPoint(0, -picker->height())));
+        connect(picker, &EmojiPicker::emojiSelected, this, [this](const QString& emoji) {
+            m_inputEdit->insert(emoji);
+        });
+        picker->show();
+    });
+
+    // 图片选择（base64 方案：§0.1 item 4）
+    connect(imageBtn, &QPushButton::clicked, this, [this]() {
+        QString path = QFileDialog::getOpenFileName(this, "选择图片",
+            QString(), "Images (*.png *.jpg *.jpeg *.gif *.bmp)");
+        if (path.isEmpty()) return;
+
+        // 读取文件
+        QFile file(path);
+        if (!file.open(QIODevice::ReadOnly)) {
+            QMessageBox::warning(this, "图片发送失败", "无法读取文件：" + path);
+            return;
+        }
+        QByteArray fileData = file.readAll();
+        file.close();
+
+        // 500KB 限制（§4 Phase 3）
+        if (fileData.size() > 500 * 1024) {
+            QMessageBox::warning(this, "图片过大",
+                QString("图片大小为 %1KB，超过 500KB 限制。\n请压缩或缩小图片后重试。")
+                    .arg(fileData.size() / 1024));
+            return;
+        }
+
+        // Base64 编码
+        QByteArray base64 = fileData.toBase64();
+        QString base64Str = QString::fromLatin1(base64);
+
+        // 发送（content = base64, msg_type=3）
+        QJsonObject msg = MessageBuilder::buildChatSend(m_targetUserId, base64Str, 3);
+        msg["seq"] = static_cast<int>(m_socket->nextSeq());
+        if (m_socket->sendFrame(FrameType::REQUEST, msg)) {
+            appendImage(true, m_myNickname, base64Str);
+        }
+    });
 }
 
-void ChatWidget::pullHistory(int withUserId)
+void ChatWidget::openConversation(int userId, const QString& nickname)
 {
-    QJsonObject msg = MessageBuilder::buildChatHistory(withUserId);
+    m_targetUserId   = userId;
+    m_targetNickname = nickname;
+    m_messageList->clear();
+    m_titleLabel->setText(nickname);
+    m_inputEdit->setEnabled(true);
+    m_sendBtn->setEnabled(true);
+    appendSystem(QString("与 %1 的聊天").arg(nickname));
+    pullHistory();
+}
+
+void ChatWidget::pullHistory()
+{
+    if (m_targetUserId <= 0) return;
+    QJsonObject msg = MessageBuilder::buildChatHistory(m_targetUserId);
     msg["seq"] = static_cast<int>(m_socket->nextSeq());
     m_socket->sendFrame(FrameType::REQUEST, msg);
-    appendSystem(QString("正在拉取与用户 %1 的历史消息...").arg(withUserId));
 }
 
 void ChatWidget::onSendClicked()
 {
     QString content = m_inputEdit->text().trimmed();
-    QString targetText = m_targetEdit->text().trimmed();
+    if (content.isEmpty() || m_targetUserId <= 0) return;
 
-    if (content.isEmpty()) return;
-    if (targetText.isEmpty()) {
-        appendSystem("请先输入目标用户ID！");
+    // 消息长度 4096 字节校验（§8 UI 规范）
+    if (content.toUtf8().size() > 4096) {
+        QMessageBox::warning(this, "消息过长",
+            QString("消息内容超过 4096 字节限制（当前 %1 字节）。请缩短消息。")
+                .arg(content.toUtf8().size()));
         return;
     }
 
-    bool ok = false;
-    int targetId = targetText.toInt(&ok);
-    if (!ok || targetId <= 0) {
-        appendSystem("用户ID 必须为正整数");
-        return;
-    }
-
-    // 构造并发送
-    QJsonObject msg = MessageBuilder::buildChatSend(targetId, content);
+    QJsonObject msg = MessageBuilder::buildChatSend(m_targetUserId, content);
     msg["seq"] = static_cast<int>(m_socket->nextSeq());
     if (m_socket->sendFrame(FrameType::REQUEST, msg)) {
         appendMessage(true, m_myNickname, content);
@@ -101,7 +171,13 @@ void ChatWidget::onFrameReceived(const Frame& frame)
 
     if (type == "chat.recv") {
         ChatRecv r = MessageBuilder::parseChatRecv(frame.payload);
-        appendMessage(false, r.fromNickname, r.content);
+        if (r.fromUserId == m_targetUserId || m_targetUserId == 0) {
+            if (r.msgType == 3) {
+                appendImage(false, r.fromNickname, r.content);
+            } else {
+                appendMessage(false, r.fromNickname, r.content, r.extra);
+            }
+        }
 
     } else if (type == "chat.send_res") {
         ChatSendResponse r = MessageBuilder::parseChatSendResponse(frame.payload);
@@ -112,18 +188,21 @@ void ChatWidget::onFrameReceived(const Frame& frame)
     } else if (type == "chat.history_res") {
         ChatHistoryResponse r = MessageBuilder::parseChatHistoryResponse(frame.payload);
         if (!r.ok) {
-            appendSystem(QString("历史拉取失败：%1 (code=%2)").arg(r.errorMsg).arg(r.code));
+            appendSystem(QString("历史拉取失败：%1").arg(r.errorMsg));
             return;
         }
         if (r.messages.empty()) {
             appendSystem("（无历史消息）");
         } else {
             appendSystem(QString("—— 历史消息（共 %1 条）——").arg(r.messages.size()));
-            // 历史消息按时间排序（正序展示）
             for (const auto& m : r.messages) {
                 bool isMine = (m.fromUserId == m_myUserId);
-                QString sender = isMine ? m_myNickname : QString("用户%1").arg(m.fromUserId);
-                appendMessage(isMine, sender, m.content);
+                QString sender = isMine ? m_myNickname : m_targetNickname;
+                if (m.msgType == 3) {
+                    appendImage(isMine, sender, m.content);
+                } else {
+                    appendMessage(isMine, sender, m.content, m.extra);
+                }
             }
             appendSystem("—— 以上为历史消息 ——");
         }
@@ -137,35 +216,98 @@ void ChatWidget::onFrameReceived(const Frame& frame)
 void ChatWidget::onConnectionFailed(const QString& reason)
 {
     appendSystem(QString("连接断开：%1").arg(reason));
-    m_statusLabel->setText("已断开");
-    m_statusLabel->setStyleSheet("color: #e74c3c;");
     m_sendBtn->setEnabled(false);
 }
 
-// ── 辅助方法 ─────────────────────────────────────────
+// ── 消息展示 ─────────────────────────────────────────
 
-void ChatWidget::appendMessage(bool isMine, const QString& sender, const QString& content)
+void ChatWidget::appendMessage(bool isMine, const QString& sender, const QString& content,
+                                const QString& extra)
 {
     QString prefix = isMine ? "我" : sender;
     QString color  = isMine ? "#2e86c1" : "#27ae60";
     QString timeStr = QDateTime::currentDateTime().toString("HH:mm");
+    QString displayText = content;
+    if (!extra.isEmpty() && content.startsWith("[表情]")) {
+        displayText = extra;
+    }
 
     QString display = QString("<b style='color:%1'>%2</b> "
                               "<span style='color:#888; font-size:11px;'>%3</span><br>"
                               "%4")
-                          .arg(color, prefix, timeStr, content.toHtmlEscaped());
+                          .arg(color, prefix.toHtmlEscaped(), timeStr,
+                               displayText.toHtmlEscaped());
 
     auto* item = new QListWidgetItem();
     item->setSizeHint(QSize(0, 48));
-
     auto* label = new QLabel(display);
     label->setWordWrap(true);
+    label->setTextFormat(Qt::RichText);
     label->setStyleSheet(QString(
         "QLabel { background: %1; border-radius: 6px; padding: 6px 10px; }"
     ).arg(isMine ? "#d6eaf8" : "#d5f5e3"));
 
+    // 右对齐己方消息（§8 UI 规范）
+    item->setTextAlignment(isMine ? Qt::AlignRight : Qt::AlignLeft);
+
     m_messageList->addItem(item);
     m_messageList->setItemWidget(item, label);
+    m_messageList->scrollToBottom();
+}
+
+void ChatWidget::appendImage(bool isMine, const QString& sender, const QString& base64Data)
+{
+    QString timeStr = QDateTime::currentDateTime().toString("HH:mm");
+    QColor bgColor = isMine ? QColor("#d6eaf8") : QColor("#fdebd0");
+
+    auto* item = new QListWidgetItem();
+    auto* widget = new QWidget();
+    auto* hbox = new QHBoxLayout(widget);
+    hbox->setContentsMargins(6, 4, 6, 4);
+
+    // 解码 base64 → QImage → QPixmap
+    QByteArray raw = QByteArray::fromBase64(base64Data.toLatin1());
+    QImage img;
+    img.loadFromData(raw);
+
+    QLabel* imgLabel = new QLabel();
+    if (!img.isNull()) {
+        QPixmap pix = QPixmap::fromImage(img);
+        // 限制最大显示尺寸 200x200
+        if (pix.width() > 200 || pix.height() > 200) {
+            pix = pix.scaled(200, 200, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        }
+        imgLabel->setPixmap(pix);
+        item->setSizeHint(QSize(0, pix.height() + 24));
+    } else {
+        imgLabel->setText("[图片加载失败]");
+        imgLabel->setStyleSheet("color: #999; font-size: 12px;");
+        item->setSizeHint(QSize(0, 40));
+    }
+
+    QString senderColor = isMine ? "#2e86c1" : "#e67e22";
+    QLabel* nameLabel = new QLabel(QString("<b style='color:%1'>%2</b> "
+                                           "<span style='color:#888; font-size:11px;'>%3</span>")
+                                       .arg(senderColor, sender.toHtmlEscaped(), timeStr));
+    nameLabel->setTextFormat(Qt::RichText);
+
+    auto* vbox = new QVBoxLayout();
+    vbox->setSpacing(2);
+    vbox->addWidget(nameLabel);
+    vbox->addWidget(imgLabel);
+
+    if (isMine) {
+        hbox->addStretch();
+        hbox->addLayout(vbox);
+    } else {
+        hbox->addLayout(vbox);
+        hbox->addStretch();
+    }
+
+    widget->setStyleSheet(QString("background: %1; border-radius: 6px;").arg(bgColor.name()));
+
+    m_messageList->addItem(item);
+    m_messageList->setItemWidget(item, widget);
     m_messageList->scrollToBottom();
 }
 
@@ -173,11 +315,10 @@ void ChatWidget::appendSystem(const QString& text)
 {
     auto* item = new QListWidgetItem();
     item->setSizeHint(QSize(0, 24));
-
     auto* label = new QLabel(QString("<span style='color:#999; font-size:12px;'>%1</span>")
                                  .arg(text.toHtmlEscaped()));
     label->setAlignment(Qt::AlignCenter);
-
+    label->setTextFormat(Qt::RichText);
     m_messageList->addItem(item);
     m_messageList->setItemWidget(item, label);
     m_messageList->scrollToBottom();

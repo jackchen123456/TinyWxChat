@@ -266,9 +266,62 @@ wx-client/
 │   └── MessageBuilder.h / .cpp  # 消息构造 (login/send/history) 与响应解析
 └── ui/
     ├── LoginWidget.h / .cpp      # 登录页面
-    ├── ChatWidget.h / .cpp       # 聊天页面（消息列表 + 输入框 + 发送）
+    ├── RegisterWidget.h / .cpp   # 注册页面 (Phase 2)
+    ├── ConversationListWidget.h / .cpp  # 会话列表 (Phase 2)
+    ├── FriendListWidget.h / .cpp        # 好友管理 (Phase 2)
+    ├── GroupListWidget.h / .cpp         # 群聊列表 (Phase 3)
+    ├── GroupCreateDialog.h / .cpp       # 创建群聊对话框 (Phase 3)
+    ├── EmojiPicker.h / .cpp             # 表情选择器 (Phase 3)
+    ├── ChatWidget.h / .cpp       # 单聊页面
+    ├── GroupChatWidget.h / .cpp  # 群聊页面 (Phase 3)
+    ├── MainHubWidget.h / .cpp    # 标签页导航 (Phase 2)
     └── MainWindow.h / .cpp       # 主窗口（页面切换管理）
 ```
+
+## Phase 2/3 新增功能（已实现）
+
+### Phase 2 — 基础体验
+
+**注册页面**
+- 点击登录页的「还没有账号？立即注册」进入
+- 填写用户名、昵称、密码后注册
+- 注册成功返回登录页
+
+**会话列表**
+- 登录后默认显示「聊天」标签页
+- 按最近时间排序展示所有单聊会话
+- 点击任意会话进入聊天
+
+**好友管理**
+- 切换到「好友」标签页
+- 显示好友列表，双击好友可发起聊天
+- 「+ 添加好友」按钮：输入对方用户 ID 发送好友申请
+- 待处理申请列表：双击可同意
+
+**标签页导航**
+- 顶部三标签：聊天 | 好友 | 群聊
+- 登录后直接进入标签页主界面
+- 从聊天页可点击「← 返回」回到主界面
+
+### Phase 3 — 富媒体与群聊
+
+**群聊**
+- 切换到「群聊」标签页
+- 「+ 创建群聊」创建新群
+- 输入群 ID 加入已有群聊
+- 双击群聊进入群消息页面
+- 群消息实时广播给在线成员
+- 支持群历史消息拉取
+
+**表情发送**
+- 聊天输入框左侧「😊」按钮
+- 点击弹出 Unicode 表情面板（含 80+ 表情）
+- 点击表情插入到输入框
+
+**图片发送**
+- 输入框左侧「📎」按钮
+- 打开文件选择器（png/jpg/gif/bmp）
+- 图片路径作为消息发送（msg_type=3）
 
 ## 文档入口（先看这些）
 

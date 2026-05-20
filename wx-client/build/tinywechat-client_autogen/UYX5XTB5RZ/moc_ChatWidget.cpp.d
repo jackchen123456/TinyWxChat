@@ -92,6 +92,7 @@
   /usr/include/aarch64-linux-gnu/gnu/stubs-lp64.h \
   /usr/include/aarch64-linux-gnu/gnu/stubs.h \
   /usr/include/aarch64-linux-gnu/qt6/QtCore/QByteArray \
+  /usr/include/aarch64-linux-gnu/qt6/QtCore/QDateTime \
   /usr/include/aarch64-linux-gnu/qt6/QtCore/QJsonArray \
   /usr/include/aarch64-linux-gnu/qt6/QtCore/QJsonObject \
   /usr/include/aarch64-linux-gnu/qt6/QtCore/QString \
@@ -233,6 +234,7 @@
   /usr/include/aarch64-linux-gnu/qt6/QtNetwork/qtnetwork-config.h \
   /usr/include/aarch64-linux-gnu/qt6/QtNetwork/qtnetworkexports.h \
   /usr/include/aarch64-linux-gnu/qt6/QtNetwork/qtnetworkglobal.h \
+  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QFrame \
   /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QLabel \
   /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QLineEdit \
   /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QListWidget \

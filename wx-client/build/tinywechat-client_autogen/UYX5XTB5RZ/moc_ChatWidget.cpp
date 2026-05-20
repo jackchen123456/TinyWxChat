@@ -29,7 +29,7 @@ namespace {
 struct qt_meta_stringdata_ChatWidget_t {
     uint offsetsAndSizes[18];
     char stringdata0[11];
-    char stringdata1[13];
+    char stringdata1[5];
     char stringdata2[1];
     char stringdata3[14];
     char stringdata4[16];
@@ -43,17 +43,17 @@ struct qt_meta_stringdata_ChatWidget_t {
 Q_CONSTINIT static const qt_meta_stringdata_ChatWidget_t qt_meta_stringdata_ChatWidget = {
     {
         QT_MOC_LITERAL(0, 10),  // "ChatWidget"
-        QT_MOC_LITERAL(11, 12),  // "disconnected"
-        QT_MOC_LITERAL(24, 0),  // ""
-        QT_MOC_LITERAL(25, 13),  // "onSendClicked"
-        QT_MOC_LITERAL(39, 15),  // "onFrameReceived"
-        QT_MOC_LITERAL(55, 5),  // "Frame"
-        QT_MOC_LITERAL(61, 5),  // "frame"
-        QT_MOC_LITERAL(67, 18),  // "onConnectionFailed"
-        QT_MOC_LITERAL(86, 6)   // "reason"
+        QT_MOC_LITERAL(11, 4),  // "back"
+        QT_MOC_LITERAL(16, 0),  // ""
+        QT_MOC_LITERAL(17, 13),  // "onSendClicked"
+        QT_MOC_LITERAL(31, 15),  // "onFrameReceived"
+        QT_MOC_LITERAL(47, 5),  // "Frame"
+        QT_MOC_LITERAL(53, 5),  // "frame"
+        QT_MOC_LITERAL(59, 18),  // "onConnectionFailed"
+        QT_MOC_LITERAL(78, 6)   // "reason"
     },
     "ChatWidget",
-    "disconnected",
+    "back",
     "",
     "onSendClicked",
     "onFrameReceived",
@@ -106,7 +106,7 @@ Q_CONSTINIT const QMetaObject ChatWidget::staticMetaObject = { {
     qt_incomplete_metaTypeArray<qt_meta_stringdata_ChatWidget_t,
         // Q_OBJECT / Q_GADGET
         QtPrivate::TypeAndForceComplete<ChatWidget, std::true_type>,
-        // method 'disconnected'
+        // method 'back'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'onSendClicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
@@ -126,7 +126,7 @@ void ChatWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         auto *_t = static_cast<ChatWidget *>(_o);
         (void)_t;
         switch (_id) {
-        case 0: _t->disconnected(); break;
+        case 0: _t->back(); break;
         case 1: _t->onSendClicked(); break;
         case 2: _t->onFrameReceived((*reinterpret_cast< std::add_pointer_t<Frame>>(_a[1]))); break;
         case 3: _t->onConnectionFailed((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
@@ -136,7 +136,7 @@ void ChatWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         int *result = reinterpret_cast<int *>(_a[0]);
         {
             using _t = void (ChatWidget::*)();
-            if (_t _q_method = &ChatWidget::disconnected; *reinterpret_cast<_t *>(_a[1]) == _q_method) {
+            if (_t _q_method = &ChatWidget::back; *reinterpret_cast<_t *>(_a[1]) == _q_method) {
                 *result = 0;
                 return;
             }
@@ -175,7 +175,7 @@ int ChatWidget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 
 // SIGNAL 0
-void ChatWidget::disconnected()
+void ChatWidget::back()
 {
     QMetaObject::activate(this, &staticMetaObject, 0, nullptr);
 }

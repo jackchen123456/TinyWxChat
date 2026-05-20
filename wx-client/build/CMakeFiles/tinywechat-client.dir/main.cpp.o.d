@@ -403,7 +403,15 @@ CMakeFiles/tinywechat-client.dir/main.cpp.o: \
  /home/jack/Projects/TinyWeChat/wx-client/ui/../network/FrameCodec.h \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/QByteArray \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/qbytearray.h \
- /home/jack/Projects/TinyWeChat/wx-client/ui/ChatWidget.h \
+ /home/jack/Projects/TinyWeChat/wx-client/ui/RegisterWidget.h \
+ /home/jack/Projects/TinyWeChat/wx-client/ui/MainHubWidget.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QHBoxLayout \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qboxlayout.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qlayout.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qlayoutitem.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qboxlayout.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qgridlayout.h \
+ /home/jack/Projects/TinyWeChat/wx-client/ui/ConversationListWidget.h \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QListWidget \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qlistwidget.h \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qlistview.h \
@@ -420,8 +428,44 @@ CMakeFiles/tinywechat-client.dir/main.cpp.o: \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qstyle.h \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qtabbar.h \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qrubberband.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/QMap \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qmap.h \
+ /home/jack/Projects/TinyWeChat/wx-client/ui/FriendListWidget.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QDialog \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qdialog.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/QList \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qlist.h \
  /home/jack/Projects/TinyWeChat/wx-client/ui/../protocol/MessageBuilder.h \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/QJsonArray \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/qjsonarray.h \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/QString \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qstring.h
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qstring.h \
+ /home/jack/Projects/TinyWeChat/wx-client/ui/GroupListWidget.h \
+ /home/jack/Projects/TinyWeChat/wx-client/ui/AvatarLabel.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/QColor \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qcolor.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/QMouseEvent \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qevent.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qpointer.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qeventpoint.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qvector2d.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qvectornd.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qpointingdevice.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qinputdevice.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qscreen.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/QList \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/QObject \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qobject.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/QRect \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qrect.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/QSize \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qsize.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/QSizeF \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/QTransform \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qtransform.h \
+ /home/jack/Projects/TinyWeChat/wx-client/ui/ChatWidget.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QFrame \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qframe.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/QDateTime \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qdatetime.h \
+ /home/jack/Projects/TinyWeChat/wx-client/ui/GroupChatWidget.h

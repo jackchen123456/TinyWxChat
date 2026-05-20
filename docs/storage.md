@@ -235,6 +235,37 @@ MVP 暂不做自动清理。后续可考虑：
 
 ---
 
+## 4.5 会话列表查询（从 messages 聚合）
+
+> 设计决策：不建独立 conversations 表，直接从 messages 聚合最近会话（见 `requirements.md` §0.1 决策 #5）。
+
+**查询最近会话（单聊）：**
+
+```sql
+-- 获取 user_id=1 的最近 50 个会话
+SELECT
+  CASE WHEN from_uid = 1 THEN to_uid ELSE from_uid END AS peer_id,
+  MAX(timestamp) AS last_time,
+  (SELECT content FROM messages
+   WHERE msg_id = (
+     SELECT MAX(msg_id) FROM messages
+     WHERE (from_uid = 1 AND to_uid = peer_id)
+        OR (from_uid = peer_id AND to_uid = 1)
+   )) AS last_content
+FROM messages
+WHERE from_uid = 1 OR to_uid = 1
+GROUP BY peer_id
+ORDER BY last_time DESC
+LIMIT 50;
+```
+
+**注意事项：**
+- 此查询在消息量 < 10 万条时性能可接受
+- 后续数据增长可增加 `conversations` 独立表做写时维护
+- MVP 阶段不做未读计数（需要额外的 `last_read_msg_id` 字段）
+
+---
+
 ## 5. 注意
 
 - 所有时间戳为 Unix 秒（`INTEGER`），时区统一为 UTC，客户端展示时做本地转换

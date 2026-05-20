@@ -27,8 +27,7 @@ bool parseHeader(const uint8_t* buf, Frame& out)
     out.frameType = static_cast<FrameType>(buf[6]);
     out.flags      = buf[7];
 
-    if (out.version != PROTOCOL_VERSION && out.version != 0) {
-        // 0 is tolerated for backward compat during early dev
+    if (out.version != PROTOCOL_VERSION) {
         return false;
     }
     if (out.length > MAX_PAYLOAD_SIZE)

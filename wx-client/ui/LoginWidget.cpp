@@ -11,13 +11,11 @@ LoginWidget::LoginWidget(WeChatSocket* socket, QWidget* parent)
     auto* mainLayout = new QVBoxLayout(this);
     mainLayout->setContentsMargins(60, 80, 60, 80);
 
-    // 标题
     auto* title = new QLabel("TinyWeChat 登录");
     title->setAlignment(Qt::AlignCenter);
     title->setStyleSheet("font-size: 22px; font-weight: bold; margin-bottom: 20px;");
     mainLayout->addWidget(title);
 
-    // 表单
     auto* form = new QFormLayout();
     m_usernameEdit = new QLineEdit();
     m_usernameEdit->setPlaceholderText("请输入用户名");
@@ -28,27 +26,28 @@ LoginWidget::LoginWidget(WeChatSocket* socket, QWidget* parent)
     form->addRow("密  码：", m_passwordEdit);
     mainLayout->addLayout(form);
 
-    // 登录按钮
     m_loginBtn = new QPushButton("登 录");
     m_loginBtn->setMinimumHeight(36);
     m_loginBtn->setStyleSheet("font-size: 15px;");
     mainLayout->addWidget(m_loginBtn);
 
-    // 状态标签
     m_statusLabel = new QLabel();
     m_statusLabel->setAlignment(Qt::AlignCenter);
     m_statusLabel->setStyleSheet("color: #e74c3c; margin-top: 10px;");
     mainLayout->addWidget(m_statusLabel);
 
+    auto* registerLink = new QPushButton("还没有账号？立即注册");
+    registerLink->setFlat(true);
+    registerLink->setStyleSheet("color: #3498db; border: none; font-size: 12px;");
+    mainLayout->addWidget(registerLink);
+    connect(registerLink, &QPushButton::clicked, this, &LoginWidget::goRegister);
+
     mainLayout->addStretch();
 
-    // 信号连接
     connect(m_loginBtn, &QPushButton::clicked, this, &LoginWidget::onLoginClicked);
     connect(m_socket, &WeChatSocket::frameReceived, this, &LoginWidget::onFrameReceived);
     connect(m_socket, &QTcpSocket::connected, this, &LoginWidget::onConnected);
     connect(m_socket, &WeChatSocket::connectionFailed, this, &LoginWidget::onConnectionFailed);
-
-    // 回车也可触发登录
     connect(m_passwordEdit, &QLineEdit::returnPressed, this, &LoginWidget::onLoginClicked);
 }
 
@@ -64,9 +63,6 @@ void LoginWidget::onLoginClicked()
 
     m_statusLabel->setText("正在连接服务器...");
     m_loginBtn->setEnabled(false);
-    m_connecting = true;
-
-    // 连接服务端（localhost:9527）
     m_socket->connectToServer("127.0.0.1", 9090);
 }
 
@@ -79,9 +75,7 @@ void LoginWidget::onConnected()
         m_usernameEdit->text().trimmed(),
         m_passwordEdit->text()
     );
-    // 填充 seq
     loginMsg["seq"] = static_cast<int>(m_socket->nextSeq());
-
     m_socket->sendFrame(FrameType::REQUEST, loginMsg);
 }
 
@@ -97,14 +91,30 @@ void LoginWidget::onFrameReceived(const Frame& frame)
             emit loggedIn(r.userId, r.nickname);
         } else {
             m_statusLabel->setStyleSheet("color: #e74c3c; margin-top: 10px;");
-            m_statusLabel->setText(QString("登录失败：%1 (code=%2)")
-                .arg(r.errorMsg.isEmpty() ? "未知错误" : r.errorMsg)
-                .arg(r.code));
+            // §8: 登录失败时显示具体错误原因（如"用户名或密码错误"）
+            QString hint;
+            switch (r.code) {
+            case 300: hint = "用户不存在，请检查用户名"; break;
+            case 401: hint = "密码错误，请重新输入"; break;
+            case 200: hint = "请求格式错误，请检查用户名和密码"; break;
+            case 210: hint = "未授权，请重新登录"; break;
+            default:
+                hint = r.errorMsg.isEmpty()
+                    ? QString("登录失败 (code=%1)").arg(r.code)
+                    : r.errorMsg;
+                break;
+            }
+            m_statusLabel->setText(hint);
             m_loginBtn->setEnabled(true);
         }
     } else if (type == "error") {
         ErrorNotification e = MessageBuilder::parseError(frame.payload);
-        m_statusLabel->setText(QString("错误：%1 (code=%2)").arg(e.message).arg(e.code));
+        QString hint;
+        switch (e.code) {
+        case 210: hint = "未登录，请检查连接状态"; break;
+        default:  hint = e.message.isEmpty() ? QString("错误 (code=%1)").arg(e.code) : e.message; break;
+        }
+        m_statusLabel->setText(hint);
         m_loginBtn->setEnabled(true);
     }
 }
@@ -115,5 +125,4 @@ void LoginWidget::onConnectionFailed(const QString& reason)
     m_statusLabel->setStyleSheet("color: #e74c3c; margin-top: 10px;");
     m_statusLabel->setText(QString("连接失败：%1").arg(reason));
     m_loginBtn->setEnabled(true);
-    m_connecting = false;
 }

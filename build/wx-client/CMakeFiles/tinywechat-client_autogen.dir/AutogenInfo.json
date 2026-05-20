@@ -192,9 +192,57 @@
 			null
 		],
 		[
+			"/home/jack/Projects/TinyWeChat/wx-client/ui/AvatarLabel.h",
+			"Mu",
+			"UYX5XTB5RZ/moc_AvatarLabel.cpp",
+			null
+		],
+		[
+			"/home/jack/Projects/TinyWeChat/wx-client/ui/AvatarSelectDialog.h",
+			"Mu",
+			"UYX5XTB5RZ/moc_AvatarSelectDialog.cpp",
+			null
+		],
+		[
 			"/home/jack/Projects/TinyWeChat/wx-client/ui/ChatWidget.h",
 			"Mu",
 			"UYX5XTB5RZ/moc_ChatWidget.cpp",
+			null
+		],
+		[
+			"/home/jack/Projects/TinyWeChat/wx-client/ui/ConversationListWidget.h",
+			"Mu",
+			"UYX5XTB5RZ/moc_ConversationListWidget.cpp",
+			null
+		],
+		[
+			"/home/jack/Projects/TinyWeChat/wx-client/ui/EmojiPicker.h",
+			"Mu",
+			"UYX5XTB5RZ/moc_EmojiPicker.cpp",
+			null
+		],
+		[
+			"/home/jack/Projects/TinyWeChat/wx-client/ui/FriendListWidget.h",
+			"Mu",
+			"UYX5XTB5RZ/moc_FriendListWidget.cpp",
+			null
+		],
+		[
+			"/home/jack/Projects/TinyWeChat/wx-client/ui/GroupChatWidget.h",
+			"Mu",
+			"UYX5XTB5RZ/moc_GroupChatWidget.cpp",
+			null
+		],
+		[
+			"/home/jack/Projects/TinyWeChat/wx-client/ui/GroupCreateDialog.h",
+			"Mu",
+			"UYX5XTB5RZ/moc_GroupCreateDialog.cpp",
+			null
+		],
+		[
+			"/home/jack/Projects/TinyWeChat/wx-client/ui/GroupListWidget.h",
+			"Mu",
+			"UYX5XTB5RZ/moc_GroupListWidget.cpp",
 			null
 		],
 		[
@@ -204,9 +252,21 @@
 			null
 		],
 		[
+			"/home/jack/Projects/TinyWeChat/wx-client/ui/MainHubWidget.h",
+			"Mu",
+			"UYX5XTB5RZ/moc_MainHubWidget.cpp",
+			null
+		],
+		[
 			"/home/jack/Projects/TinyWeChat/wx-client/ui/MainWindow.h",
 			"Mu",
 			"UYX5XTB5RZ/moc_MainWindow.cpp",
+			null
+		],
+		[
+			"/home/jack/Projects/TinyWeChat/wx-client/ui/RegisterWidget.h",
+			"Mu",
+			"UYX5XTB5RZ/moc_RegisterWidget.cpp",
 			null
 		]
 	],
@@ -293,7 +353,47 @@
 			null
 		],
 		[
+			"/home/jack/Projects/TinyWeChat/wx-client/ui/AvatarLabel.cpp",
+			"Mu",
+			null
+		],
+		[
+			"/home/jack/Projects/TinyWeChat/wx-client/ui/AvatarSelectDialog.cpp",
+			"Mu",
+			null
+		],
+		[
 			"/home/jack/Projects/TinyWeChat/wx-client/ui/ChatWidget.cpp",
+			"Mu",
+			null
+		],
+		[
+			"/home/jack/Projects/TinyWeChat/wx-client/ui/ConversationListWidget.cpp",
+			"Mu",
+			null
+		],
+		[
+			"/home/jack/Projects/TinyWeChat/wx-client/ui/EmojiPicker.cpp",
+			"Mu",
+			null
+		],
+		[
+			"/home/jack/Projects/TinyWeChat/wx-client/ui/FriendListWidget.cpp",
+			"Mu",
+			null
+		],
+		[
+			"/home/jack/Projects/TinyWeChat/wx-client/ui/GroupChatWidget.cpp",
+			"Mu",
+			null
+		],
+		[
+			"/home/jack/Projects/TinyWeChat/wx-client/ui/GroupCreateDialog.cpp",
+			"Mu",
+			null
+		],
+		[
+			"/home/jack/Projects/TinyWeChat/wx-client/ui/GroupListWidget.cpp",
 			"Mu",
 			null
 		],
@@ -303,7 +403,17 @@
 			null
 		],
 		[
+			"/home/jack/Projects/TinyWeChat/wx-client/ui/MainHubWidget.cpp",
+			"Mu",
+			null
+		],
+		[
 			"/home/jack/Projects/TinyWeChat/wx-client/ui/MainWindow.cpp",
+			"Mu",
+			null
+		],
+		[
+			"/home/jack/Projects/TinyWeChat/wx-client/ui/RegisterWidget.cpp",
 			"Mu",
 			null
 		]

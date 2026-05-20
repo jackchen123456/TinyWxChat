@@ -96,28 +96,9 @@ void Server::acceptLoop()
             std::to_string(ntohs(clientAddr.sin_port)));
 
         // Create session and run it in a dedicated thread
-        auto* sess = new Session(clientFd, *this);
+        auto sess = std::make_shared<Session>(clientFd, *this);
+        addSession(sess);
         sess->start();   // starts read + write threads internally
-        // NOTE: Session lifecycle — the session cleans itself up?
-        // For now we leak the pointer.  A production server would track
-        // sessions and join threads on shutdown.  For MVP, this is ok.
-        //
-        // Actually we do track sessions in the registry (when logged in).
-        // Unconnected sessions will be cleaned up when their read/write
-        // threads detect EOF/error and call shutdown().
-        //
-        // We store a raw pointer but don't hold ownership; the session's
-        // own threads keep it alive.  On disconnect, shutdown() runs and
-        // the threads exit, effectively "deleting themselves".  To avoid
-        // use-after-free: shutdown joins threads, so after join the
-        // Session object is safe to delete.  We'll add a simple mechanism:
-        // store a shared_ptr, or let each session delete itself.
-        //
-        // SIMPLE MVP APPROACH: we'll store the Session* and when its
-        // shutdown() runs, it removes itself from a global "all sessions"
-        // set.  The accept-loop thread doesn't touch it after creating.
-        // Memory is leaked on normal shutdown (acceptable for MVP).
-        (void)sess; // suppress unused warning until we add cleanup
     }
     log("Accept loop ended");
 }
@@ -127,14 +108,14 @@ void Server::acceptLoop()
 void Server::registerSession(int64_t userId, Session* session)
 {
     std::lock_guard<std::mutex> lk(sessionsMutex_);
-    sessions_[userId] = session;
+    sessions_[userId] = std::shared_ptr<Session>(session, [](Session*){});
 }
 
 void Server::unregisterSession(Session* session)
 {
     std::lock_guard<std::mutex> lk(sessionsMutex_);
     auto it = sessions_.find(session->userId());
-    if (it != sessions_.end() && it->second == session)
+    if (it != sessions_.end() && it->second.get() == session)
         sessions_.erase(it);
 }
 
@@ -142,12 +123,12 @@ Session* Server::findSession(int64_t userId)
 {
     std::lock_guard<std::mutex> lk(sessionsMutex_);
     auto it = sessions_.find(userId);
-    return (it != sessions_.end()) ? it->second : nullptr;
+    return (it != sessions_.end()) ? it->second.get() : nullptr;
 }
 
 void Server::kickExisting(int64_t userId)
 {
-    Session* old = nullptr;
+    std::shared_ptr<Session> old;
     {
         std::lock_guard<std::mutex> lk(sessionsMutex_);
         auto it = sessions_.find(userId);
@@ -158,11 +139,6 @@ void Server::kickExisting(int64_t userId)
     }
     if (old) {
         log("Kicking old session for uid=" + std::to_string(userId));
-        // Just close the fd — the old session's read/write threads
-        // will detect the closed socket and shut down on their own.
-        // We intentionally do NOT delete old here because its threads
-        // are still running; the Session object is leaked (acceptable
-        // for MVP — memory is reclaimed when the server exits).
         old->closeSocket();
     }
 }
@@ -172,4 +148,34 @@ void Server::kickExisting(int64_t userId)
 void Server::log(const std::string& msg)
 {
     std::cout << "[SRV] " << msg << std::endl;
+}
+
+// ── All sessions management ─────────────────────────────
+
+void Server::addSession(std::shared_ptr<Session> session)
+{
+    std::lock_guard<std::mutex> lk(allSessionsMutex_);
+    allSessions_.push_back(session);
+}
+
+void Server::removeSession(Session* session)
+{
+    std::lock_guard<std::mutex> lk(allSessionsMutex_);
+    allSessions_.erase(
+        std::remove_if(allSessions_.begin(), allSessions_.end(),
+            [session](const std::shared_ptr<Session>& s) {
+                return s.get() == session;
+            }),
+        allSessions_.end());
+}
+
+std::shared_ptr<Session> Server::getSession(Session* session)
+{
+    std::lock_guard<std::mutex> lk(allSessionsMutex_);
+    for (const auto& s : allSessions_) {
+        if (s.get() == session) {
+            return s;
+        }
+    }
+    return nullptr;
 }
