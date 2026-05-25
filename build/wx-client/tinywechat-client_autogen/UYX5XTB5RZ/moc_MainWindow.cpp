@@ -1,19 +1,25 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'MainWindow.h'
 **
-** Created by: The Qt Meta Object Compiler version 68 (Qt 6.4.2)
+** Created by: The Qt Meta Object Compiler version 69 (Qt 6.11.1)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#include <memory>
 #include "../../../../wx-client/ui/MainWindow.h"
 #include <QtGui/qtextcursor.h>
 #include <QtCore/qmetatype.h>
+
+#include <QtCore/qtmochelpers.h>
+
+#include <memory>
+
+
+#include <QtCore/qxptype_traits.h>
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'MainWindow.h' doesn't include <QObject>."
-#elif Q_MOC_OUTPUT_REVISION != 68
-#error "This file was generated using the moc from 6.4.2. It"
+#elif Q_MOC_OUTPUT_REVISION != 69
+#error "This file was generated using the moc from 6.11.1. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
@@ -22,145 +28,68 @@
 #define Q_CONSTINIT
 #endif
 
-QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
+QT_WARNING_DISABLE_GCC("-Wuseless-cast")
 namespace {
-struct qt_meta_stringdata_MainWindow_t {
-    uint offsetsAndSizes[28];
-    char stringdata0[11];
-    char stringdata1[11];
-    char stringdata2[1];
-    char stringdata3[7];
-    char stringdata4[9];
-    char stringdata5[13];
-    char stringdata6[13];
-    char stringdata7[9];
-    char stringdata8[14];
-    char stringdata9[11];
-    char stringdata10[16];
-    char stringdata11[8];
-    char stringdata12[5];
-    char stringdata13[12];
-};
-#define QT_MOC_LITERAL(ofs, len) \
-    uint(sizeof(qt_meta_stringdata_MainWindow_t::offsetsAndSizes) + ofs), len 
-Q_CONSTINIT static const qt_meta_stringdata_MainWindow_t qt_meta_stringdata_MainWindow = {
-    {
-        QT_MOC_LITERAL(0, 10),  // "MainWindow"
-        QT_MOC_LITERAL(11, 10),  // "onLoggedIn"
-        QT_MOC_LITERAL(22, 0),  // ""
-        QT_MOC_LITERAL(23, 6),  // "userId"
-        QT_MOC_LITERAL(30, 8),  // "nickname"
-        QT_MOC_LITERAL(39, 12),  // "onGoRegister"
-        QT_MOC_LITERAL(52, 12),  // "onRegistered"
-        QT_MOC_LITERAL(65, 8),  // "username"
-        QT_MOC_LITERAL(74, 13),  // "onBackToLogin"
-        QT_MOC_LITERAL(88, 10),  // "onOpenChat"
-        QT_MOC_LITERAL(99, 15),  // "onOpenGroupChat"
-        QT_MOC_LITERAL(115, 7),  // "groupId"
-        QT_MOC_LITERAL(123, 4),  // "name"
-        QT_MOC_LITERAL(128, 11)   // "onBackToHub"
-    },
-    "MainWindow",
-    "onLoggedIn",
-    "",
-    "userId",
-    "nickname",
-    "onGoRegister",
-    "onRegistered",
-    "username",
-    "onBackToLogin",
-    "onOpenChat",
-    "onOpenGroupChat",
-    "groupId",
-    "name",
-    "onBackToHub"
-};
-#undef QT_MOC_LITERAL
+struct qt_meta_tag_ZN10MainWindowE_t {};
 } // unnamed namespace
 
-Q_CONSTINIT static const uint qt_meta_data_MainWindow[] = {
+template <> constexpr inline auto MainWindow::qt_create_metaobjectdata<qt_meta_tag_ZN10MainWindowE_t>()
+{
+    namespace QMC = QtMocConstants;
+    QtMocHelpers::StringRefStorage qt_stringData {
+        "MainWindow",
+        "onLoggedIn",
+        "",
+        "userId",
+        "nickname",
+        "onGoRegister",
+        "onRegistered",
+        "username",
+        "onBackToLogin"
+    };
 
- // content:
-      10,       // revision
-       0,       // classname
-       0,    0, // classinfo
-       7,   14, // methods
-       0,    0, // properties
-       0,    0, // enums/sets
-       0,    0, // constructors
-       0,       // flags
-       0,       // signalCount
-
- // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    2,   56,    2, 0x08,    1 /* Private */,
-       5,    0,   61,    2, 0x08,    4 /* Private */,
-       6,    1,   62,    2, 0x08,    5 /* Private */,
-       8,    0,   65,    2, 0x08,    7 /* Private */,
-       9,    2,   66,    2, 0x08,    8 /* Private */,
-      10,    2,   71,    2, 0x08,   11 /* Private */,
-      13,    0,   76,    2, 0x08,   14 /* Private */,
-
- // slots: parameters
-    QMetaType::Void, QMetaType::Int, QMetaType::QString,    3,    4,
-    QMetaType::Void,
-    QMetaType::Void, QMetaType::QString,    7,
-    QMetaType::Void,
-    QMetaType::Void, QMetaType::Int, QMetaType::QString,    3,    4,
-    QMetaType::Void, QMetaType::Int, QMetaType::QString,   11,   12,
-    QMetaType::Void,
-
-       0        // eod
-};
-
+    QtMocHelpers::UintData qt_methods {
+        // Slot 'onLoggedIn'
+        QtMocHelpers::SlotData<void(int, const QString &)>(1, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Int, 3 }, { QMetaType::QString, 4 },
+        }}),
+        // Slot 'onGoRegister'
+        QtMocHelpers::SlotData<void()>(5, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'onRegistered'
+        QtMocHelpers::SlotData<void(const QString &)>(6, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::QString, 7 },
+        }}),
+        // Slot 'onBackToLogin'
+        QtMocHelpers::SlotData<void()>(8, 2, QMC::AccessPrivate, QMetaType::Void),
+    };
+    QtMocHelpers::UintData qt_properties {
+    };
+    QtMocHelpers::UintData qt_enums {
+    };
+    return QtMocHelpers::metaObjectData<MainWindow, qt_meta_tag_ZN10MainWindowE_t>(QMC::MetaObjectFlag{}, qt_stringData,
+            qt_methods, qt_properties, qt_enums);
+}
 Q_CONSTINIT const QMetaObject MainWindow::staticMetaObject = { {
     QMetaObject::SuperData::link<QMainWindow::staticMetaObject>(),
-    qt_meta_stringdata_MainWindow.offsetsAndSizes,
-    qt_meta_data_MainWindow,
+    qt_staticMetaObjectStaticContent<qt_meta_tag_ZN10MainWindowE_t>.stringdata,
+    qt_staticMetaObjectStaticContent<qt_meta_tag_ZN10MainWindowE_t>.data,
     qt_static_metacall,
     nullptr,
-    qt_incomplete_metaTypeArray<qt_meta_stringdata_MainWindow_t,
-        // Q_OBJECT / Q_GADGET
-        QtPrivate::TypeAndForceComplete<MainWindow, std::true_type>,
-        // method 'onLoggedIn'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        QtPrivate::TypeAndForceComplete<int, std::false_type>,
-        QtPrivate::TypeAndForceComplete<const QString &, std::false_type>,
-        // method 'onGoRegister'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'onRegistered'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        QtPrivate::TypeAndForceComplete<const QString &, std::false_type>,
-        // method 'onBackToLogin'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'onOpenChat'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        QtPrivate::TypeAndForceComplete<int, std::false_type>,
-        QtPrivate::TypeAndForceComplete<const QString &, std::false_type>,
-        // method 'onOpenGroupChat'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        QtPrivate::TypeAndForceComplete<int, std::false_type>,
-        QtPrivate::TypeAndForceComplete<const QString &, std::false_type>,
-        // method 'onBackToHub'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>
-    >,
+    qt_staticMetaObjectRelocatingContent<qt_meta_tag_ZN10MainWindowE_t>.metaTypes,
     nullptr
 } };
 
 void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
+    auto *_t = static_cast<MainWindow *>(_o);
     if (_c == QMetaObject::InvokeMetaMethod) {
-        auto *_t = static_cast<MainWindow *>(_o);
-        (void)_t;
         switch (_id) {
-        case 0: _t->onLoggedIn((*reinterpret_cast< std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[2]))); break;
+        case 0: _t->onLoggedIn((*reinterpret_cast<std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<QString>>(_a[2]))); break;
         case 1: _t->onGoRegister(); break;
-        case 2: _t->onRegistered((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
+        case 2: _t->onRegistered((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1]))); break;
         case 3: _t->onBackToLogin(); break;
-        case 4: _t->onOpenChat((*reinterpret_cast< std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[2]))); break;
-        case 5: _t->onOpenGroupChat((*reinterpret_cast< std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[2]))); break;
-        case 6: _t->onBackToHub(); break;
         default: ;
         }
     }
@@ -174,7 +103,7 @@ const QMetaObject *MainWindow::metaObject() const
 void *MainWindow::qt_metacast(const char *_clname)
 {
     if (!_clname) return nullptr;
-    if (!strcmp(_clname, qt_meta_stringdata_MainWindow.stringdata0))
+    if (!strcmp(_clname, qt_staticMetaObjectStaticContent<qt_meta_tag_ZN10MainWindowE_t>.strings))
         return static_cast<void*>(this);
     return QMainWindow::qt_metacast(_clname);
 }
@@ -185,15 +114,15 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 7)
+        if (_id < 4)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 7;
-    } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 7)
+        _id -= 4;
+    }
+    if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
+        if (_id < 4)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 7;
+        _id -= 4;
     }
     return _id;
 }
 QT_WARNING_POP
-QT_END_MOC_NAMESPACE

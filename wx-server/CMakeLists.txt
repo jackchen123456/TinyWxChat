@@ -10,14 +10,6 @@ find_package(nlohmann_json REQUIRED)
 find_package(SQLite3 REQUIRED)
 find_package(Threads REQUIRED)
 
-# asio is header-only, typically installed at /usr/include
-find_path(ASIO_INCLUDE_DIR asio.hpp PATHS /usr/include)
-if(ASIO_INCLUDE_DIR)
-    message(STATUS "Found asio at ${ASIO_INCLUDE_DIR}")
-else()
-    message(FATAL_ERROR "asio not found — install libasio-dev")
-endif()
-
 # ── Source files ──────────────────────────────────────────
 set(SOURCES
     src/main.cpp
@@ -38,13 +30,21 @@ set(HEADERS
 add_executable(tinywechat-server ${SOURCES} ${HEADERS})
 
 target_include_directories(tinywechat-server PRIVATE
-    ${ASIO_INCLUDE_DIR}
     src/
+    ${CMAKE_CURRENT_SOURCE_DIR}/..   # 共享协议头：#include "protocol/common.h"
 )
 
 target_link_libraries(tinywechat-server PRIVATE
     nlohmann_json::nlohmann_json
     SQLite::SQLite3
     Threads::Threads
-    crypt      # for bcrypt via crypt_r()
 )
+
+# ── Platform-specific crypto ──────────────────────────────
+if(APPLE)
+    find_package(OpenSSL REQUIRED)
+    target_link_libraries(tinywechat-server PRIVATE OpenSSL::Crypto)
+    target_include_directories(tinywechat-server PRIVATE ${OPENSSL_INCLUDE_DIR})
+else()
+    target_link_libraries(tinywechat-server PRIVATE crypt)
+endif()

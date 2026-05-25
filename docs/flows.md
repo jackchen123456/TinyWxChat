@@ -280,7 +280,7 @@ Client                        Server
 Client                        Server
   │                              │
   │──── 非法帧 ─────────────────>│
-  │    (length>65535 / 不识别    │
+  │    (length > 1 MiB / 不识别  │
   │     的 frame_type)           │
   │                              │
   │<─── close() 连接 ───────────│

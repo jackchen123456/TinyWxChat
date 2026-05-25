@@ -1,5 +1,4 @@
 #include "MainWindow.h"
-#include <QDebug>
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
@@ -7,7 +6,13 @@ MainWindow::MainWindow(QWidget* parent)
     , m_stack(new QStackedWidget(this))
 {
     setWindowTitle("TinyWeChat");
-    resize(420, 680);
+    resize(500, 580);
+
+    // 窗口默认背景
+    QPalette pal = palette();
+    pal.setColor(QPalette::Window, QColor("#f4f7f6"));
+    m_stack->setAutoFillBackground(true);
+    m_stack->setPalette(pal);
 
     m_loginWidget = new LoginWidget(m_socket);
     m_stack->addWidget(m_loginWidget);  // 0
@@ -31,40 +36,26 @@ void MainWindow::onLoggedIn(int userId, const QString& nickname)
     if (!m_hubWidget) {
         m_hubWidget = new MainHubWidget(m_socket, userId, nickname);
         m_stack->addWidget(m_hubWidget);  // 2
-        connect(m_hubWidget, &MainHubWidget::openChat,      this, &MainWindow::onOpenChat);
-        connect(m_hubWidget, &MainHubWidget::openGroupChat, this, &MainWindow::onOpenGroupChat);
     }
     m_stack->setCurrentIndex(Page::HUB);
     setWindowTitle(QString("TinyWeChat — %1").arg(nickname));
+    resize(1100, 720);
 }
 
-void MainWindow::onGoRegister()       { m_stack->setCurrentIndex(Page::REGISTER); }
-void MainWindow::onRegistered(const QString&) { m_stack->setCurrentIndex(Page::LOGIN); }
-void MainWindow::onBackToLogin()      { m_stack->setCurrentIndex(Page::LOGIN); }
-
-void MainWindow::onOpenChat(int userId, const QString& nickname)
+void MainWindow::onGoRegister()
 {
-    if (!m_chatWidget) {
-        m_chatWidget = new ChatWidget(m_socket, m_myUserId, m_myNickname);
-        m_stack->addWidget(m_chatWidget);  // 3
-        connect(m_chatWidget, &ChatWidget::back, this, &MainWindow::onBackToHub);
-    }
-    m_chatWidget->openConversation(userId, nickname);
-    m_stack->setCurrentIndex(Page::CHAT);
+    m_stack->setCurrentIndex(Page::REGISTER);
+    resize(500, 620);
 }
 
-void MainWindow::onOpenGroupChat(int groupId, const QString& name)
+void MainWindow::onRegistered(const QString&)
 {
-    if (!m_groupChatWidget) {
-        m_groupChatWidget = new GroupChatWidget(m_socket, m_myUserId, m_myNickname);
-        m_stack->addWidget(m_groupChatWidget);  // 4
-        connect(m_groupChatWidget, &GroupChatWidget::back, this, &MainWindow::onBackToHub);
-    }
-    m_groupChatWidget->openGroup(groupId, name);
-    m_stack->setCurrentIndex(Page::GROUP_CHAT);
+    m_stack->setCurrentIndex(Page::LOGIN);
+    resize(500, 580);
 }
 
-void MainWindow::onBackToHub()
+void MainWindow::onBackToLogin()
 {
-    m_stack->setCurrentIndex(Page::HUB);
+    m_stack->setCurrentIndex(Page::LOGIN);
+    resize(500, 580);
 }

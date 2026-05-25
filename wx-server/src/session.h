@@ -12,6 +12,14 @@
 
 class Server;
 
+// ── Heartbeat timeout (CRITICAL-1) ──────────────────────
+// Server closes connection if no data received for this many milliseconds.
+constexpr int HEARTBEAT_TIMEOUT_MS = 90 * 1000;  // 90 seconds
+
+// ── Write queue limit (M-2) ─────────────────────────────
+// Maximum bytes allowed in the per-session write queue before dropping.
+constexpr size_t MAX_WRITE_QUEUE_BYTES = 4 * 1024 * 1024;  // 4 MiB（可缓存几条图片消息）
+
 // ── Session state ────────────────────────────────────────
 enum class SessionState {
     CONNECTED,   // TCP established, not yet logged in
@@ -36,7 +44,8 @@ public:
 
     // ── Send ─────────────────────────────────────────────
     /// Thread-safe: queue bytes to be sent on the socket.
-    void sendBytes(const std::vector<uint8_t>& data);
+    /// Returns false if the write queue is full (M-2).
+    bool sendBytes(const std::vector<uint8_t>& data);
 
     // ── Lifecycle ────────────────────────────────────────
     void start();
@@ -55,7 +64,7 @@ private:
     void dispatchMessage(const std::string& type, int seq, const nlohmann::json& body);
     void writerLoop();
 
-    // ── Individual message handlers (Phase 2/3) ──────────
+    // ── Individual message handlers ──────────────────────
     void handleAuthLogin(int seq, const nlohmann::json& body);
     void handleAuthRegister(int seq, const nlohmann::json& body);
     void handleChatSend(int seq, const nlohmann::json& body);
@@ -85,6 +94,7 @@ private:
     std::mutex              writeMutex_;
     std::condition_variable writeCv_;
     std::vector<uint8_t>    writeQueue_;
+    size_t                  writeQueueBytes_ = 0;  // M-2: track queue size
 
     std::unique_ptr<std::thread> readThread_;
     std::unique_ptr<std::thread> writeThread_;

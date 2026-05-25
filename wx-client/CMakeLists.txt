@@ -31,3 +31,6 @@ target_link_libraries(tinywechat-client PRIVATE
     Qt6::Widgets
     Qt6::Network
 )
+
+# 共享协议头：让 #include "protocol/common.h" 解析到仓库顶层的 protocol/ 目录
+target_include_directories(tinywechat-client PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..)

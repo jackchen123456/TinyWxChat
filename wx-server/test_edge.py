@@ -76,7 +76,8 @@ print("\n3) 未登录发消息...")
 s = connect()
 send_frame(s, "chat.send", {"to_user_id": 2, "content": "hello", "msg_type": 1})
 ft, data = recv_frame(s)
-assert ft == 0x03 and data["body"]["code"] == 210, f"Expected UNAUTHORIZED, got {data}"
+# 错误带 seq 时走 RESPONSE 帧（M-1），让客户端能按 seq 关联回原请求
+assert ft == 0x02 and data["body"]["code"] == 210, f"Expected UNAUTHORIZED, got ft={ft} {data}"
 print("   PASS: code=210 (UNAUTHORIZED)")
 s.close()
 

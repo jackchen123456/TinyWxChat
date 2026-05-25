@@ -36,7 +36,7 @@ GroupCreateDialog::GroupCreateDialog(WeChatSocket* socket, QWidget* parent)
     // 等待响应
     connect(m_socket, &WeChatSocket::frameReceived, this, [this](const Frame& frame) {
         QString type = frame.payload.value("type").toString();
-        if (type == "group.create_res") {
+        if (type == MsgType::GROUP_CREATE_RES) {
             GroupCreateResponse r = MessageBuilder::parseGroupCreateResponse(frame.payload);
             if (r.ok) {
                 m_groupId = r.groupId;

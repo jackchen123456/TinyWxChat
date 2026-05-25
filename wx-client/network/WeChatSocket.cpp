@@ -15,9 +15,13 @@ WeChatSocket::WeChatSocket(QObject* parent)
     m_timeoutTimer->setSingleShot(true);
     connect(m_timeoutTimer, &QTimer::timeout, this, &WeChatSocket::onConnectionTimeout);
 
-    // 重连定时器（单次触发）
+    // 重连定时器（单次触发）：超时后真正发起 connectToHost
     m_reconnectTimer->setSingleShot(true);
-    connect(m_reconnectTimer, &QTimer::timeout, this, &WeChatSocket::attemptReconnect);
+    connect(m_reconnectTimer, &QTimer::timeout, this, [this]() {
+        if (!m_reconnecting) return;  // 取消
+        qDebug() << "[WeChatSocket] connectToHost (reconnect)";
+        connectToHost(m_host, m_port);
+    });
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
     connect(this, &QTcpSocket::errorOccurred, this, &WeChatSocket::onSocketError);
@@ -69,6 +73,16 @@ bool WeChatSocket::sendFrame(FrameType type, const QJsonObject& body)
         return false;
     }
 
+    // 写缓冲保护：若 QTcpSocket 内部待发字节 + 本帧 > MAX_WRITE_BUFFER，拒绝发送
+    // 避免慢网络/对端卡死时本端内存被无限拉高
+    if (bytesToWrite() + data.size() > MAX_WRITE_BUFFER) {
+        qWarning() << "[WeChatSocket] Write buffer full ("
+                   << bytesToWrite() << "+" << data.size()
+                   << ">" << MAX_WRITE_BUFFER << "), dropping frame";
+        emit connectionFailed("发送缓冲溢出，对端可能已卡住");
+        return false;
+    }
+
     qint64 written = write(data);
     if (written != data.size()) {
         qWarning() << "[WeChatSocket] Write incomplete:" << written << "/" << data.size();
@@ -91,13 +105,20 @@ void WeChatSocket::onReadyRead()
     while (true) {
         Frame frame;
         int consumed = 0;
-        if (!FrameCodec::decode(m_buffer, frame, consumed))
+        auto result = FrameCodec::decode(m_buffer, frame, consumed);
+        if (result == FrameCodec::DecodeResult::Incomplete)
             break;
+        if (result == FrameCodec::DecodeResult::Malformed) {
+            qWarning() << "[WeChatSocket] Malformed frame, disconnecting";
+            m_buffer.clear();
+            abort();  // QTcpSocket::abort — 立即断开
+            return;
+        }
 
         m_buffer.remove(0, consumed);
         qDebug() << "[WeChatSocket] Decoded frame, type:" << static_cast<int>(frame.frameType);
 
-        if (frame.frameType == FrameType::PING_PONG) {
+        if (frame.frameType == FrameType::PINGPONG) {
             qDebug() << "[WeChatSocket] Received PONG";
             continue;
         }
@@ -109,7 +130,7 @@ void WeChatSocket::onReadyRead()
 void WeChatSocket::onHeartbeat()
 {
     qDebug() << "[WeChatSocket] Sending PING";
-    sendFrame(FrameType::PING_PONG, QJsonObject());
+    sendFrame(FrameType::PINGPONG, QJsonObject());
 }
 
 void WeChatSocket::onConnectionTimeout()
@@ -126,7 +147,13 @@ void WeChatSocket::onSocketError(QAbstractSocket::SocketError error)
     qWarning() << "[WeChatSocket] Socket error:" << errorString();
     m_heartbeatTimer->stop();
     m_timeoutTimer->stop();
-    startReconnect();
+    if (m_reconnecting) {
+        // 若已有重连定时器在计时，则忽略本次错误（避免计数器重复递增）
+        if (m_reconnectTimer->isActive()) return;
+        attemptReconnect();
+    } else {
+        startReconnect();
+    }
 }
 
 // ── 指数退避重连（1s / 2s / 4s / 8s / 16s，最多 5 次）──────────
@@ -164,13 +191,13 @@ void WeChatSocket::attemptReconnect()
 
     emit reconnecting(m_reconnectAttempt, MAX_RECONNECT_ATTEMPTS);
 
-    // 先关闭旧连接
-    close();
+    // 关闭旧连接（abort 不会触发 errorOccurred）
+    abort();
     m_buffer.clear();
 
-    // 延迟后尝试连接
+    // 延迟 delayMs 后再 connectToHost；
+    // 若连接失败 onSocketError 会触发下一次 attemptReconnect。
     m_reconnectTimer->start(delayMs);
-    connectToHost(m_host, m_port);
 }
 
 void WeChatSocket::stopReconnect()

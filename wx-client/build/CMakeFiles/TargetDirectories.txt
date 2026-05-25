@@ -1,5 +1,0 @@
-/home/jack/Projects/TinyWeChat/wx-client/build/CMakeFiles/tinywechat-client.dir
-/home/jack/Projects/TinyWeChat/wx-client/build/CMakeFiles/edit_cache.dir
-/home/jack/Projects/TinyWeChat/wx-client/build/CMakeFiles/rebuild_cache.dir
-/home/jack/Projects/TinyWeChat/wx-client/build/CMakeFiles/tinywechat-client_autogen_timestamp_deps.dir
-/home/jack/Projects/TinyWeChat/wx-client/build/CMakeFiles/tinywechat-client_autogen.dir

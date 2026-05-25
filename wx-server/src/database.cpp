@@ -1,27 +1,59 @@
 #include "database.h"
 #include <iostream>
-#include <crypt.h>
 #include <cstring>
 #include <ctime>
 #include <algorithm>
-#include <cstdlib>
+#include <fstream>
+#include <random>
+
+#ifdef __APPLE__
+#include <openssl/evp.h>
+#else
+#include <crypt.h>
+#endif
+
+// ── helpers ─────────────────────────────────────────────
+
+// 安全提取 TEXT 列：列值为 NULL 时返回空串，避免对 nullptr 构造 std::string 崩溃
+static std::string colText(sqlite3_stmt* stmt, int col) {
+    const unsigned char* p = sqlite3_column_text(stmt, col);
+    return p ? reinterpret_cast<const char*>(p) : std::string{};
+}
 
 // ── bcrypt helpers ──────────────────────────────────────
 
 static std::string bcryptHash(const std::string& password)
 {
-    // Generate random salt
+    // Generate random salt using std::random_device (CSPRNG on Linux/macOS)
     static const char* salt_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./";
-    char salt[22];
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<int> dis(0, 63);
+    char salt[23];
     for (int i = 0; i < 22; i++) {
-        salt[i] = salt_chars[rand() % 64];
+        salt[i] = salt_chars[dis(gen)];
     }
     salt[22] = '\0';
-    
-    // Build salt string: $2b$12$<22 chars>
+
+#ifdef __APPLE__
+    // macOS: use OpenSSL PBKDF2-HMAC-SHA256
+    unsigned char out[32];
+    if (!PKCS5_PBKDF2_HMAC(password.c_str(), password.size(),
+                            reinterpret_cast<const unsigned char*>(salt), 22,
+                            100000, EVP_sha256(), 32, out)) {
+        std::cerr << "[DB] PBKDF2 hash failed" << std::endl;
+        return "";
+    }
+    // Encode as hex with prefix
+    char hex[65];
+    for (int i = 0; i < 32; i++) snprintf(hex + i * 2, 3, "%02x", out[i]);
+    hex[64] = '\0';
+    return std::string("$pbkdf2$") + salt + "$" + hex;
+#else
+    // Linux: use crypt_r with bcrypt
     char salt_str[30];
     snprintf(salt_str, sizeof(salt_str), "$2b$12$%s", salt);
-    
+
     struct crypt_data data{};
     char* result = crypt_r(password.c_str(), salt_str, &data);
     if (!result) {
@@ -29,13 +61,33 @@ static std::string bcryptHash(const std::string& password)
         return "";
     }
     return std::string(result);
+#endif
 }
 
 static bool bcryptVerify(const std::string& password, const std::string& hash)
 {
+#ifdef __APPLE__
+    // Extract salt from $pbkdf2$<salt>$<hex>
+    auto p1 = hash.find('$', 1);
+    auto p2 = hash.find('$', p1 + 1);
+    if (p1 == std::string::npos || p2 == std::string::npos) return false;
+    std::string salt = hash.substr(p1 + 1, p2 - p1 - 1);
+
+    unsigned char out[32];
+    if (!PKCS5_PBKDF2_HMAC(password.c_str(), password.size(),
+                            reinterpret_cast<const unsigned char*>(salt.c_str()), salt.size(),
+                            100000, EVP_sha256(), 32, out)) {
+        return false;
+    }
+    char hex[65];
+    for (int i = 0; i < 32; i++) snprintf(hex + i * 2, 3, "%02x", out[i]);
+    hex[64] = '\0';
+    return hash == (std::string("$pbkdf2$") + salt + "$" + hex);
+#else
     struct crypt_data data{};
     char* result = crypt_r(password.c_str(), hash.c_str(), &data);
     return result && (hash == result);
+#endif
 }
 
 // ── Database ────────────────────────────────────────────
@@ -50,8 +102,6 @@ Database::~Database()
 
 bool Database::open(const std::string& path)
 {
-    srand(time(nullptr));
-    
     int rc = sqlite3_open(path.c_str(), &db_);
     if (rc != SQLITE_OK) {
         std::cerr << "[DB] Failed to open: " << sqlite3_errmsg(db_) << std::endl;
@@ -120,8 +170,10 @@ void Database::createTables()
             FOREIGN KEY (user_a) REFERENCES users(id),
             FOREIGN KEY (user_b) REFERENCES users(id)
         );
+        -- Application code ensures user_a < user_b (see handleFriendRequest),
+        -- so a plain UNIQUE index on (user_a, user_b) is sufficient and reliable.
         CREATE UNIQUE INDEX IF NOT EXISTS idx_friends_pair
-            ON friends( MIN(user_a, user_b), MAX(user_a, user_b) );
+            ON friends(user_a, user_b);
 
         CREATE TABLE IF NOT EXISTS friend_requests (
             id          INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -135,6 +187,10 @@ void Database::createTables()
             FOREIGN KEY (to_uid)   REFERENCES users(id)
         );
         CREATE INDEX IF NOT EXISTS idx_fr_to ON friend_requests(to_uid, status);
+        -- 部分唯一索引：同一 from→to 同一时刻只能存在一条 pending 请求，
+        -- 把"两个并发请求都通过应用层去重"那种竞争从语义上消除。
+        CREATE UNIQUE INDEX IF NOT EXISTS uq_friend_request_pending
+            ON friend_requests(from_uid, to_uid) WHERE status = 0;
     )";
 
     // ── Phase 3: Groups ─────────────────────────────────
@@ -221,6 +277,7 @@ void Database::seedTestUsers()
 std::optional<UserInfo> Database::authenticate(const std::string& username,
                                                 const std::string& password)
 {
+    std::lock_guard<std::recursive_mutex> lk(mutex_);
     sqlite3_reset(stmt_auth_);
     sqlite3_clear_bindings(stmt_auth_);
     sqlite3_bind_text(stmt_auth_, 1, username.c_str(), -1, SQLITE_TRANSIENT);
@@ -230,9 +287,9 @@ std::optional<UserInfo> Database::authenticate(const std::string& username,
 
     UserInfo u;
     u.id       = sqlite3_column_int64(stmt_auth_, 0);
-    u.username = reinterpret_cast<const char*>(sqlite3_column_text(stmt_auth_, 1));
-    u.nickname = reinterpret_cast<const char*>(sqlite3_column_text(stmt_auth_, 2));
-    const char* hash = reinterpret_cast<const char*>(sqlite3_column_text(stmt_auth_, 3));
+    u.username = colText(stmt_auth_, 1);
+    u.nickname = colText(stmt_auth_, 2);
+    std::string hash = colText(stmt_auth_, 3);
 
     if (!bcryptVerify(password, hash))
         return std::nullopt;
@@ -244,6 +301,7 @@ int64_t Database::registerUser(const std::string& username,
                                const std::string& password,
                                const std::string& nickname)
 {
+    std::lock_guard<std::recursive_mutex> lk(mutex_);
     std::string hash = bcryptHash(password);
     if (hash.empty()) return -1;
 
@@ -271,6 +329,7 @@ int64_t Database::registerUser(const std::string& username,
 
 std::optional<UserInfo> Database::userById(int64_t uid)
 {
+    std::lock_guard<std::recursive_mutex> lk(mutex_);
     sqlite3_stmt* stmt;
     sqlite3_prepare_v2(db_,
         "SELECT id, username, nickname FROM users WHERE id = ?",
@@ -281,8 +340,8 @@ std::optional<UserInfo> Database::userById(int64_t uid)
     if (sqlite3_step(stmt) == SQLITE_ROW) {
         UserInfo u;
         u.id       = sqlite3_column_int64(stmt, 0);
-        u.username = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
-        u.nickname = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+        u.username = colText(stmt, 1);
+        u.nickname = colText(stmt, 2);
         result = u;
     }
     sqlite3_finalize(stmt);
@@ -294,6 +353,7 @@ std::optional<UserInfo> Database::userById(int64_t uid)
 int64_t Database::saveMessage(int64_t from_uid, int64_t to_uid,
                               const std::string& content, int msg_type)
 {
+    std::lock_guard<std::recursive_mutex> lk(mutex_);
     sqlite3_reset(stmt_insert_msg_);
     sqlite3_clear_bindings(stmt_insert_msg_);
 
@@ -313,6 +373,7 @@ int64_t Database::saveMessage(int64_t from_uid, int64_t to_uid,
 std::vector<MessageRow> Database::getHistory(int64_t uid_a, int64_t uid_b,
                                               int64_t before_msg_id, int limit)
 {
+    std::lock_guard<std::recursive_mutex> lk(mutex_);
     std::string sql = R"(
         SELECT msg_id, from_uid, to_uid, content, msg_type, timestamp
         FROM messages
@@ -341,7 +402,7 @@ std::vector<MessageRow> Database::getHistory(int64_t uid_a, int64_t uid_b,
         r.msg_id    = sqlite3_column_int64(stmt, 0);
         r.from_uid  = sqlite3_column_int64(stmt, 1);
         r.to_uid    = sqlite3_column_int64(stmt, 2);
-        r.content   = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+        r.content   = colText(stmt, 3);
         r.msg_type  = sqlite3_column_int(stmt, 4);
         r.timestamp = sqlite3_column_int64(stmt, 5);
         rows.push_back(r);
@@ -354,33 +415,33 @@ std::vector<MessageRow> Database::getHistory(int64_t uid_a, int64_t uid_b,
 
 std::vector<Database::ConversationRow> Database::getConversations(int64_t uid)
 {
-    // Per the requirements §0.1 decision #5:
-    // SELECT DISTINCT ... GROUP BY peer_id ORDER BY last_time DESC
+    std::lock_guard<std::recursive_mutex> lk(mutex_);
+    // 取每个 peer 最近一条消息：先按 peer 找最大 msg_id（严格递增，避免同秒撞），
+    // 再回连 messages 拿对应那条的 content + timestamp。
     const char* sql = R"(
-        SELECT
-            CASE WHEN from_uid = ? THEN to_uid ELSE from_uid END AS peer_id,
-            u.nickname,
-            content,
-            MAX(timestamp) AS last_ts
-        FROM messages m
-        JOIN users u ON u.id = CASE WHEN from_uid = ? THEN to_uid ELSE from_uid END
-        WHERE from_uid = ? OR to_uid = ?
-        GROUP BY peer_id
-        ORDER BY last_ts DESC
+        SELECT t.peer_id, u.nickname, m.content, m.timestamp
+        FROM (
+            SELECT
+                CASE WHEN from_uid = ?1 THEN to_uid ELSE from_uid END AS peer_id,
+                MAX(msg_id) AS last_id
+            FROM messages
+            WHERE from_uid = ?1 OR to_uid = ?1
+            GROUP BY peer_id
+        ) t
+        JOIN messages m ON m.msg_id = t.last_id
+        JOIN users u ON u.id = t.peer_id
+        ORDER BY m.timestamp DESC
     )";
     sqlite3_stmt* stmt;
     sqlite3_prepare_v2(db_, sql, -1, &stmt, nullptr);
     sqlite3_bind_int64(stmt, 1, uid);
-    sqlite3_bind_int64(stmt, 2, uid);
-    sqlite3_bind_int64(stmt, 3, uid);
-    sqlite3_bind_int64(stmt, 4, uid);
 
     std::vector<ConversationRow> result;
     while (sqlite3_step(stmt) == SQLITE_ROW) {
         ConversationRow c;
         c.peer_id        = sqlite3_column_int64(stmt, 0);
-        c.peer_nickname  = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
-        c.last_content   = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+        c.peer_nickname  = colText(stmt, 1);
+        c.last_content   = colText(stmt, 2);
         c.last_timestamp = sqlite3_column_int64(stmt, 3);
         result.push_back(c);
     }
@@ -393,6 +454,7 @@ std::vector<Database::ConversationRow> Database::getConversations(int64_t uid)
 int64_t Database::createFriendRequest(int64_t from_uid, int64_t to_uid,
                                        const std::string& message)
 {
+    std::lock_guard<std::recursive_mutex> lk(mutex_);
     const char* sql = R"(
         INSERT INTO friend_requests (from_uid, to_uid, message, created_at)
         VALUES (?, ?, ?, ?)
@@ -412,6 +474,7 @@ int64_t Database::createFriendRequest(int64_t from_uid, int64_t to_uid,
 
 bool Database::handleFriendRequest(int64_t request_id, const std::string& action)
 {
+    std::lock_guard<std::recursive_mutex> lk(mutex_);
     int newStatus = (action == "accept") ? 1 : 2;
     int64_t now = static_cast<int64_t>(std::time(nullptr));
 
@@ -459,6 +522,7 @@ bool Database::handleFriendRequest(int64_t request_id, const std::string& action
 
 std::vector<FriendRow> Database::getFriendList(int64_t uid)
 {
+    std::lock_guard<std::recursive_mutex> lk(mutex_);
     std::vector<FriendRow> result;
     const char* sql = R"(
         SELECT u.id, u.nickname FROM friends f
@@ -474,7 +538,7 @@ std::vector<FriendRow> Database::getFriendList(int64_t uid)
     while (sqlite3_step(stmt) == SQLITE_ROW) {
         FriendRow r;
         r.user_id  = sqlite3_column_int64(stmt, 0);
-        r.nickname = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+        r.nickname = colText(stmt, 1);
         result.push_back(r);
     }
     sqlite3_finalize(stmt);
@@ -483,6 +547,7 @@ std::vector<FriendRow> Database::getFriendList(int64_t uid)
 
 std::vector<FriendRequestRow> Database::getPendingRequests(int64_t uid)
 {
+    std::lock_guard<std::recursive_mutex> lk(mutex_);
     std::vector<FriendRequestRow> result;
     const char* sql = R"(
         SELECT fr.id, fr.from_uid, u.nickname, fr.message, fr.status, fr.created_at
@@ -499,8 +564,8 @@ std::vector<FriendRequestRow> Database::getPendingRequests(int64_t uid)
         FriendRequestRow r;
         r.id            = sqlite3_column_int64(stmt, 0);
         r.from_uid      = sqlite3_column_int64(stmt, 1);
-        r.from_nickname = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
-        r.message       = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+        r.from_nickname = colText(stmt, 2);
+        r.message       = colText(stmt, 3);
         r.status        = sqlite3_column_int(stmt, 4);
         r.created_at    = sqlite3_column_int64(stmt, 5);
         result.push_back(r);
@@ -513,6 +578,7 @@ std::vector<FriendRequestRow> Database::getPendingRequests(int64_t uid)
 
 int64_t Database::createGroup(int64_t owner_uid, const std::string& name)
 {
+    std::lock_guard<std::recursive_mutex> lk(mutex_);
     int64_t now = static_cast<int64_t>(std::time(nullptr));
 
     // Insert group
@@ -545,6 +611,7 @@ int64_t Database::createGroup(int64_t owner_uid, const std::string& name)
 
 bool Database::joinGroup(int64_t group_id, int64_t user_id)
 {
+    std::lock_guard<std::recursive_mutex> lk(mutex_);
     // First check if group exists
     sqlite3_stmt* stmt;
     sqlite3_prepare_v2(db_,
@@ -571,6 +638,7 @@ bool Database::joinGroup(int64_t group_id, int64_t user_id)
 
 std::vector<GroupMemberRow> Database::getGroupMembers(int64_t group_id)
 {
+    std::lock_guard<std::recursive_mutex> lk(mutex_);
     std::vector<GroupMemberRow> result;
     sqlite3_stmt* stmt;
     sqlite3_prepare_v2(db_,
@@ -589,6 +657,7 @@ std::vector<GroupMemberRow> Database::getGroupMembers(int64_t group_id)
 
 bool Database::isGroupMember(int64_t group_id, int64_t user_id)
 {
+    std::lock_guard<std::recursive_mutex> lk(mutex_);
     sqlite3_stmt* stmt;
     sqlite3_prepare_v2(db_,
         "SELECT 1 FROM group_members WHERE group_id = ? AND user_id = ?",
@@ -602,6 +671,7 @@ bool Database::isGroupMember(int64_t group_id, int64_t user_id)
 
 int64_t Database::getGroupOwner(int64_t group_id)
 {
+    std::lock_guard<std::recursive_mutex> lk(mutex_);
     sqlite3_stmt* stmt;
     sqlite3_prepare_v2(db_,
         "SELECT owner_uid FROM groups WHERE id = ?",
@@ -618,6 +688,7 @@ int64_t Database::getGroupOwner(int64_t group_id)
 
 std::vector<std::pair<int64_t, std::string>> Database::getUserGroups(int64_t user_id)
 {
+    std::lock_guard<std::recursive_mutex> lk(mutex_);
     std::vector<std::pair<int64_t, std::string>> result;
     const char* sql = R"(
         SELECT g.id, g.name FROM groups g
@@ -630,7 +701,7 @@ std::vector<std::pair<int64_t, std::string>> Database::getUserGroups(int64_t use
     sqlite3_bind_int64(stmt, 1, user_id);
     while (sqlite3_step(stmt) == SQLITE_ROW) {
         int64_t gid = sqlite3_column_int64(stmt, 0);
-        std::string name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+        std::string name = colText(stmt, 1);
         result.emplace_back(gid, name);
     }
     sqlite3_finalize(stmt);
@@ -640,6 +711,7 @@ std::vector<std::pair<int64_t, std::string>> Database::getUserGroups(int64_t use
 int64_t Database::sendGroupMessage(int64_t group_id, int64_t from_uid,
                                     const std::string& content, int msg_type)
 {
+    std::lock_guard<std::recursive_mutex> lk(mutex_);
     int64_t now = static_cast<int64_t>(std::time(nullptr));
 
     // Use a transaction to prevent race condition
@@ -679,6 +751,7 @@ int64_t Database::sendGroupMessage(int64_t group_id, int64_t from_uid,
 std::vector<GroupMessageRow> Database::getGroupHistory(int64_t group_id,
                                                         int64_t before_msg_seq, int limit)
 {
+    std::lock_guard<std::recursive_mutex> lk(mutex_);
     std::string sql = R"(
         SELECT gm.id, gm.group_id, gm.msg_seq, gm.from_uid, u.nickname,
                gm.content, gm.msg_type, gm.timestamp
@@ -706,8 +779,8 @@ std::vector<GroupMessageRow> Database::getGroupHistory(int64_t group_id,
         r.group_id      = sqlite3_column_int64(stmt, 1);
         r.msg_seq       = sqlite3_column_int64(stmt, 2);
         r.from_uid      = sqlite3_column_int64(stmt, 3);
-        r.from_nickname = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4));
-        r.content       = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 5));
+        r.from_nickname = colText(stmt, 4);
+        r.content       = colText(stmt, 5);
         r.msg_type      = sqlite3_column_int(stmt, 6);
         r.timestamp     = sqlite3_column_int64(stmt, 7);
         rows.push_back(r);
@@ -721,6 +794,7 @@ std::vector<GroupMessageRow> Database::getGroupHistory(int64_t group_id,
 int64_t Database::createGroupApply(int64_t group_id, int64_t from_uid,
                                     const std::string& message)
 {
+    std::lock_guard<std::recursive_mutex> lk(mutex_);
     sqlite3_stmt* stmt;
     sqlite3_prepare_v2(db_,
         "INSERT INTO group_requests (group_id, from_uid, message, created_at) VALUES (?, ?, ?, ?)",
@@ -740,6 +814,7 @@ int64_t Database::createGroupApply(int64_t group_id, int64_t from_uid,
 
 bool Database::handleGroupApply(int64_t request_id, const std::string& action)
 {
+    std::lock_guard<std::recursive_mutex> lk(mutex_);
     int newStatus = (action == "accept") ? 1 : 2;
     int64_t now = static_cast<int64_t>(std::time(nullptr));
 
@@ -777,6 +852,7 @@ bool Database::handleGroupApply(int64_t request_id, const std::string& action)
 
 int64_t Database::getGroupRequestGroupId(int64_t request_id)
 {
+    std::lock_guard<std::recursive_mutex> lk(mutex_);
     sqlite3_stmt* stmt;
     sqlite3_prepare_v2(db_,
         "SELECT group_id FROM group_requests WHERE id = ? AND status = 0",

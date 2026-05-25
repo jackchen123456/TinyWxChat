@@ -4,12 +4,15 @@
 
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <netinet/tcp.h>   // TCP_NODELAY
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <csignal>
 #include <iostream>
 #include <thread>
 #include <cstring>
+#include <algorithm>
 
 Server::Server()  = default;
 Server::~Server() { stop(); }
@@ -90,6 +93,18 @@ void Server::acceptLoop()
             continue;
         }
 
+        // M-3: Connection limit check
+        if (connectionCount_.load() >= MAX_CONNECTIONS) {
+            log("Connection limit reached (" + std::to_string(MAX_CONNECTIONS) +
+                "), rejecting new connection");
+            close(clientFd);
+            continue;
+        }
+
+        // L-2: Set TCP_NODELAY for low-latency small messages
+        int nodelay = 1;
+        setsockopt(clientFd, IPPROTO_TCP, TCP_NODELAY, &nodelay, sizeof(nodelay));
+
         char ipBuf[INET_ADDRSTRLEN];
         inet_ntop(AF_INET, &clientAddr.sin_addr, ipBuf, sizeof(ipBuf));
         log("New connection: " + std::string(ipBuf) + ":" +
@@ -98,17 +113,20 @@ void Server::acceptLoop()
         // Create session and run it in a dedicated thread
         auto sess = std::make_shared<Session>(clientFd, *this);
         addSession(sess);
+        connectionCount_.fetch_add(1);
         sess->start();   // starts read + write threads internally
     }
     log("Accept loop ended");
 }
 
 // ── Session registry ─────────────────────────────────────
+// CRITICAL-3: registerSession now takes shared_ptr, sharing ownership
+// with allSessions_.  No more no-op deleter hack.
 
-void Server::registerSession(int64_t userId, Session* session)
+void Server::registerSession(int64_t userId, std::shared_ptr<Session> session)
 {
     std::lock_guard<std::mutex> lk(sessionsMutex_);
-    sessions_[userId] = std::shared_ptr<Session>(session, [](Session*){});
+    sessions_[userId] = std::move(session);
 }
 
 void Server::unregisterSession(Session* session)
@@ -119,11 +137,12 @@ void Server::unregisterSession(Session* session)
         sessions_.erase(it);
 }
 
-Session* Server::findSession(int64_t userId)
+// CRITICAL-3: findSession returns shared_ptr so callers hold a safe reference.
+std::shared_ptr<Session> Server::findSession(int64_t userId)
 {
     std::lock_guard<std::mutex> lk(sessionsMutex_);
     auto it = sessions_.find(userId);
-    return (it != sessions_.end()) ? it->second.get() : nullptr;
+    return (it != sessions_.end()) ? it->second : nullptr;
 }
 
 void Server::kickExisting(int64_t userId)
@@ -167,6 +186,8 @@ void Server::removeSession(Session* session)
                 return s.get() == session;
             }),
         allSessions_.end());
+    // M-3: decrement connection count
+    connectionCount_.fetch_sub(1);
 }
 
 std::shared_ptr<Session> Server::getSession(Session* session)

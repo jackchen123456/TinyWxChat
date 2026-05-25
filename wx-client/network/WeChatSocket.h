@@ -9,6 +9,10 @@ class WeChatSocket : public QTcpSocket
 {
     Q_OBJECT
 public:
+    // 与服务端 MAX_WRITE_QUEUE_BYTES 对称：单方向最多缓存 4 MiB 未发送数据。
+    // 慢网络刷消息时溢出 → 拒绝新帧并 emit connectionFailed，避免内存被吃光。
+    static constexpr qint64 MAX_WRITE_BUFFER = 4 * 1024 * 1024;
+
     explicit WeChatSocket(QObject* parent = nullptr);
 
     void connectToServer(const QString& host, quint16 port);

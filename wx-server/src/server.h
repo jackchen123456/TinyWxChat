@@ -10,6 +10,9 @@
 class Database;
 class Session;
 
+/// Maximum concurrent connections (M-3: DoS protection)
+constexpr int MAX_CONNECTIONS = 256;
+
 /// Central server: owns the listening socket, session registry, and database.
 class Server {
 public:
@@ -30,11 +33,14 @@ public:
     void stop();
 
     // ── Session registry (thread-safe) ───────────────────
-    void registerSession(int64_t userId, Session* session);
+    // CRITICAL-3: registerSession now takes shared_ptr to share ownership.
+    // findSession returns shared_ptr so callers get a safe reference.
+    void registerSession(int64_t userId, std::shared_ptr<Session> session);
     void unregisterSession(Session* session);
 
-    /// Find the session belonging to userId, or nullptr.
-    Session* findSession(int64_t userId);
+    /// Find the session belonging to userId, or nullptr.  Returns shared_ptr
+    /// so the caller can safely use the session without it being destroyed.
+    std::shared_ptr<Session> findSession(int64_t userId);
 
     /// Kick any existing session for userId (called on new login).
     void kickExisting(int64_t userId);
@@ -50,6 +56,9 @@ public:
     // ── Logging ──────────────────────────────────────────
     void log(const std::string& msg);
 
+    // ── Connection count (for M-3 limit) ─────────────────
+    int connectionCount() const { return connectionCount_.load(); }
+
 private:
     void acceptLoop();
 
@@ -58,11 +67,14 @@ private:
 
     std::unique_ptr<Database> db_;
 
-    // session map: user_id -> shared_ptr<Session>
+    // session map: user_id -> shared_ptr<Session> (shared ownership)
     std::mutex              sessionsMutex_;
     std::unordered_map<int64_t, std::shared_ptr<Session>> sessions_;
     
     // all sessions (for lifecycle management)
     std::mutex                          allSessionsMutex_;
     std::vector<std::shared_ptr<Session>> allSessions_;
+
+    // M-3: connection counter for limit enforcement
+    std::atomic<int> connectionCount_{0};
 };

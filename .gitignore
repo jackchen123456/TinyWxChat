@@ -1,1 +1,6 @@
+# 忽略 .worktrees文件夹
 .worktrees/
+
+# 忽略 cmake 生成的 build 文件夹
+build/
+build-*/

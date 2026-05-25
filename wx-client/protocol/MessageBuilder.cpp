@@ -7,8 +7,7 @@ QString MessageBuilder::messageType(const QJsonObject& payload) {
 }
 
 QJsonObject MessageBuilder::bodyFrom(const QJsonObject& payload) {
-    QJsonObject b = payload.value("body").toObject();
-    return b.isEmpty() ? payload : b;
+    return payload.value("body").toObject();
 }
 
 // ============================================================
@@ -20,7 +19,7 @@ QJsonObject MessageBuilder::buildLogin(const QString& username, const QString& p
     body["username"] = username;
     body["password"] = password;
     QJsonObject frame;
-    frame["type"] = "auth.login";
+    frame["type"] = MsgType::LOGIN;
     frame["seq"]  = 0;
     frame["body"] = body;
     return frame;
@@ -44,7 +43,7 @@ QJsonObject MessageBuilder::buildRegister(const QString& username, const QString
     body["password"] = password;
     body["nickname"] = nickname;
     QJsonObject frame;
-    frame["type"] = "auth.register";
+    frame["type"] = MsgType::REGISTER;
     frame["seq"]  = 0;
     frame["body"] = body;
     return frame;
@@ -68,7 +67,7 @@ QJsonObject MessageBuilder::buildChatSend(int toUserId, const QString& content,
     body["msg_type"]   = msgType;
     if (!extra.isEmpty()) body["extra"] = extra;
     QJsonObject frame;
-    frame["type"] = "chat.send";
+    frame["type"] = MsgType::SEND;
     frame["seq"]  = 0;
     frame["body"] = body;
     return frame;
@@ -91,7 +90,7 @@ QJsonObject MessageBuilder::buildChatHistory(int withUserId, int beforeMsgId, in
     body["before_msg_id"] = beforeMsgId;
     body["limit"]         = limit;
     QJsonObject frame;
-    frame["type"] = "chat.history";
+    frame["type"] = MsgType::HISTORY;
     frame["seq"]  = 0;
     frame["body"] = body;
     return frame;
@@ -143,7 +142,7 @@ QJsonObject MessageBuilder::buildFriendRequest(int toUserId, const QString& mess
     body["to_user_id"] = toUserId;
     if (!message.isEmpty()) body["message"] = message;
     QJsonObject frame;
-    frame["type"] = "friend.request";
+    frame["type"] = MsgType::FRIEND_REQUEST;
     frame["seq"]  = 0;
     frame["body"] = body;
     return frame;
@@ -174,7 +173,7 @@ QJsonObject MessageBuilder::buildFriendHandle(int requestId, const QString& acti
     body["request_id"] = requestId;
     body["action"]     = action;  // "accept" or "reject"
     QJsonObject frame;
-    frame["type"] = "friend.handle";
+    frame["type"] = MsgType::FRIEND_HANDLE;
     frame["seq"]  = 0;
     frame["body"] = body;
     return frame;
@@ -191,7 +190,7 @@ FriendHandleResponse MessageBuilder::parseFriendHandleResponse(const QJsonObject
 
 QJsonObject MessageBuilder::buildFriendList() {
     QJsonObject frame;
-    frame["type"] = "friend.list";
+    frame["type"] = MsgType::FRIEND_LIST;
     frame["seq"]  = 0;
     frame["body"] = QJsonObject();
     return frame;
@@ -218,7 +217,7 @@ FriendListResponse MessageBuilder::parseFriendListResponse(const QJsonObject& pa
 
 QJsonObject MessageBuilder::buildFriendPending() {
     QJsonObject frame;
-    frame["type"] = "friend.pending";
+    frame["type"] = MsgType::FRIEND_PENDING;
     frame["seq"]  = 0;
     frame["body"] = QJsonObject();
     return frame;
@@ -254,7 +253,7 @@ QJsonObject MessageBuilder::buildGroupCreate(const QString& name) {
     QJsonObject body;
     body["name"] = name;
     QJsonObject frame;
-    frame["type"] = "group.create";
+    frame["type"] = MsgType::GROUP_CREATE;
     frame["seq"]  = 0;
     frame["body"] = body;
     return frame;
@@ -274,7 +273,7 @@ QJsonObject MessageBuilder::buildGroupJoin(int groupId) {
     QJsonObject body;
     body["group_id"] = groupId;
     QJsonObject frame;
-    frame["type"] = "group.join";
+    frame["type"] = MsgType::GROUP_JOIN;
     frame["seq"]  = 0;
     frame["body"] = body;
     return frame;
@@ -297,7 +296,7 @@ QJsonObject MessageBuilder::buildGroupSend(int groupId, const QString& content,
     body["msg_type"] = msgType;
     if (!extra.isEmpty()) body["extra"] = extra;
     QJsonObject frame;
-    frame["type"] = "group.send";
+    frame["type"] = MsgType::GROUP_SEND;
     frame["seq"]  = 0;
     frame["body"] = body;
     return frame;
@@ -334,7 +333,7 @@ QJsonObject MessageBuilder::buildGroupHistory(int groupId, int beforeMsgSeq, int
     body["before_msg_seq"] = beforeMsgSeq;
     body["limit"]          = limit;
     QJsonObject frame;
-    frame["type"] = "group.history";
+    frame["type"] = MsgType::GROUP_HISTORY;
     frame["seq"]  = 0;
     frame["body"] = body;
     return frame;
@@ -370,7 +369,7 @@ QJsonObject MessageBuilder::buildGroupApply(int groupId, const QString& message)
     body["group_id"] = groupId;
     if (!message.isEmpty()) body["message"] = message;
     QJsonObject frame;
-    frame["type"] = "group.apply";
+    frame["type"] = MsgType::GROUP_APPLY;
     frame["seq"]  = 0;
     frame["body"] = body;
     return frame;
@@ -403,7 +402,7 @@ QJsonObject MessageBuilder::buildGroupApplyHandle(int requestId, const QString& 
     body["request_id"] = requestId;
     body["action"]     = action;  // "accept" or "reject"
     QJsonObject frame;
-    frame["type"] = "group.apply_handle";
+    frame["type"] = MsgType::GROUP_APPLY_HANDLE;
     frame["seq"]  = 0;
     frame["body"] = body;
     return frame;
@@ -415,6 +414,31 @@ GroupApplyHandleResponse MessageBuilder::parseGroupApplyHandleResponse(const QJs
     r.code     = b.value("code").toInt(-1);
     r.errorMsg = b.value("message").toString();
     r.ok       = (r.code == 0);
+    return r;
+}
+
+QJsonObject MessageBuilder::buildGroupList() {
+    QJsonObject body;
+    QJsonObject frame;
+    frame["type"] = MsgType::GROUP_LIST;
+    frame["seq"]  = 0;
+    frame["body"] = body;
+    return frame;
+}
+
+GroupListResponse MessageBuilder::parseGroupListResponse(const QJsonObject& payload) {
+    QJsonObject b = bodyFrom(payload);
+    GroupListResponse r;
+    r.code = b.value("code").toInt(-1);
+    r.ok   = (r.code == 0);
+    QJsonArray arr = b.value("groups").toArray();
+    for (const auto& item : arr) {
+        QJsonObject obj = item.toObject();
+        GroupListItem g;
+        g.groupId   = obj.value("group_id").toInt();
+        g.groupName = obj.value("group_name").toString();
+        r.groups.push_back(g);
+    }
     return r;
 }
 

@@ -3,6 +3,15 @@
 > 协议基础：TCP + 二进制帧头 + JSON Payload
 > 后续可升级为 protobuf，帧头兼容
 
+> 📌 **协议常量真相源**
+> C++ 两端的 `MsgType` / `ErrCode` / `FrameType` / 帧大小常量都在 [protocol/common.h](../protocol/common.h)，由 wx-client 与 wx-server 共同 include。
+> 改名/新增常量 = 一次编辑、双端编译保证一致；不存在镜像漂移问题。
+>
+> 仍需手动同步的：
+> - 本文档（值/语义的人类描述）
+> - Python 测试脚本（`wx-server/test_*.py` 里硬编码的 type 字符串）
+>
+
 ---
 
 ## 1. 帧格式（Wire Format）
@@ -20,7 +29,7 @@ Offset  Size  Field        Description
 7       1     flags        标志位（预留，当前填 0x00）
 ```
 
-- `length` 最大 64 KiB（65535），超出时客户端/服务端应当断开连接
+- `length` 最大 **1 MiB（1048576 字节）**，超出时客户端/服务端应当断开连接。这个上限为了承载 base64 编码后的图片（msg_type=3）。
 - `version` 目前仅 `0x0001`
 - `frame_type`：
   - `0x01` = REQUEST（请求）
@@ -31,7 +40,7 @@ Offset  Size  Field        Description
 
 ### 1.2 Payload（JSON）
 
-Payload 是 UTF-8 编码的 JSON 对象，长度不超过 65535 字节。
+Payload 是 UTF-8 编码的 JSON 对象，长度不超过 1 MiB（见 §1.1）。
 
 通用结构：
 
@@ -69,6 +78,8 @@ Payload 是 UTF-8 编码的 JSON 对象，长度不超过 65535 字节。
 | `chat.recv` | S→C | 服务端推送收到的消息（通知类型） |
 | `chat.history` | C→S | 拉取历史消息 |
 | `chat.history_res` | S→C | 历史消息列表 |
+| `chat.conversations` | C→S | 拉取会话列表（从 messages 聚合） |
+| `chat.conversations_res` | S→C | 会话列表 |
 
 ### 2.3 群聊
 
@@ -83,6 +94,8 @@ Payload 是 UTF-8 编码的 JSON 对象，长度不超过 65535 字节。
 | `group.recv` | S→C | 群消息推送 |
 | `group.history` | C→S | 拉取群历史 |
 | `group.history_res` | S→C | 群历史列表 |
+| `group.list` | C→S | 拉取用户加入的群列表 |
+| `group.list_res` | S→C | 群列表 |
 
 ### 2.4 好友系统
 
@@ -114,7 +127,7 @@ Payload 是 UTF-8 编码的 JSON 对象，长度不超过 65535 字节。
 |------|-----------|------|
 | `ping` | C→S | 心跳请求 |
 | `pong` | S→C | 心跳回复 |
-| `error` | S→C | 通用错误通知（frame_type=NOTIFICATION） |
+| `error` | S→C | 通用错误。若原请求带有 seq，走 RESPONSE（`frame_type=0x02`）便于客户端按 seq 关联回原请求；无 seq 时走 NOTIFICATION（`frame_type=0x03`）。 |
 
 ---
 
@@ -141,7 +154,11 @@ C→S:  { "to_user_id": 2, "content": "你好", "msg_type": 1 }
 S→C:  { "code": 0, "msg_id": 12345, "timestamp": 1700000000 }
 ```
 
-- `msg_type`：1=文本, 2=表情(Phase 3), 3=图片(Phase 3)
+- `msg_type`：1=文本, 2=表情, 3=图片
+- `content` 长度上限（服务端校验，超长返回 `code=500 MESSAGE_TOO_LONG`）：
+  - msg_type=1（文本）/ msg_type=2（表情）：**4096 字节**
+  - msg_type=3（图片）：**800 KiB**（base64 后的字符串长度；原图建议 ≤ 500 KB）
+- 图片消息约定：客户端将图片读取后 `QByteArray::toBase64()` 放进 `content`；`msg_type=3`；接收端用 `QByteArray::fromBase64()` 还原。无单独的二进制传输通道。
 
 ### chat.recv（服务端推送）
 
@@ -158,6 +175,17 @@ S→C:  { "code": 0, "messages": [ ... ] }
 ```
 
 - `before_msg_id=0` 表示从最新开始拉取；非 0 表示拉取早于此 ID 的消息。
+
+### chat.conversations
+
+```
+C→S:  {}
+S→C:  { "code": 0, "conversations": [
+        { "peer_id": 2, "peer_nickname": "Bob",
+          "last_content": "你好", "last_timestamp": 1700000000 }, ... ] }
+```
+
+- 从 messages 表聚合，按 last_timestamp 降序，最多 50 条。
 
 ### group.create
 
@@ -180,7 +208,8 @@ C→S:  { "group_id": 1, "content": "大家好", "msg_type": 1 }
 S→C:  { "code": 0, "msg_seq": 5, "timestamp": 1700000000 }
 ```
 
-- `msg_type`：同 chat.send
+- `msg_type` 与 content 长度规则同 `chat.send`（文本/表情 4096 字节、图片 800 KiB base64）。
+- 非群成员发送 → `code=322 GROUP_PERMISSION_DENIED`。
 
 ### group.recv（服务端推送）
 
@@ -197,6 +226,16 @@ S→C:  { "code": 0, "messages": [ ... ] }
 ```
 
 - `before_msg_seq=0` 表示从最新开始拉取；非 0 表示拉取早于此 seq 的消息。
+
+### group.list
+
+```
+C→S:  {}
+S→C:  { "code": 0, "groups": [
+        { "group_id": 1, "group_name": "项目群" }, ... ] }
+```
+
+- 返回当前用户加入的所有群列表。
 
 ### friend.request
 
@@ -309,11 +348,14 @@ S→C:  { "code": 0, "requests": [{"request_id": 1, "from_user_id": 1, "from_nic
 
 | 项 | 值 |
 |----|----|
-| 最大 Payload 长度 | 65535 字节 |
-| 最大文本消息长度 | 4096 字节 |
+| 最大 Payload 长度 | 1 MiB（1048576 字节） |
+| 最大文本消息长度（msg_type=1/2） | 4096 字节 |
+| 最大图片消息长度（msg_type=3） | 800 KiB（base64 后） |
+| 单个会话写缓冲上限（双向） | 4 MiB |
 | 心跳间隔（客户端） | 30 秒 |
 | 连接超时（服务端） | 90 秒无数据 |
 | 历史拉取默认条数 | 20 条 |
 | 协议版本 | `0x0001` |
 | 用户名最大长度 | 32 字节（UTF-8） |
 | 密码最小长度 | 6 字节 |
+| 服务端最大并发连接 | 256 |

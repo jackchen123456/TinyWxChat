@@ -4,8 +4,8 @@
 #include <QListWidget>
 #include <QPushButton>
 #include <QLabel>
-#include <QDialog>
 #include <QLineEdit>
+#include <QDialog>
 #include <QList>
 #include "../network/WeChatSocket.h"
 #include "../protocol/MessageBuilder.h"
@@ -28,6 +28,7 @@ private:
     QLabel*       m_statusLabel;
 };
 
+// 精简版：只负责显示好友列表和待处理申请，不含标题/搜索/按钮等外部 chrome
 class FriendListWidget : public QWidget
 {
     Q_OBJECT
@@ -38,11 +39,9 @@ public:
 
 signals:
     void startChat(int userId, const QString& nickname);
-    // 好友列表加载完成（用于同步会话列表）
     void friendsLoaded(const QList<QPair<int, QString>>& friends);
 
 private slots:
-    void onAddFriend();
     void onFrameReceived(const Frame& frame);
 
 private:
@@ -50,7 +49,4 @@ private:
     int           m_myUserId;
     QListWidget*  m_friendList;
     QListWidget*  m_pendingList;
-    QPushButton*  m_addBtn;
-    QLabel*       m_friendCount;
-    QLabel*       m_pendingLabel;
 };

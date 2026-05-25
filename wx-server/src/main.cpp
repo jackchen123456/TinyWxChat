@@ -2,6 +2,7 @@
 #include <iostream>
 #include <csignal>
 #include <atomic>
+#include <filesystem>
 
 static std::atomic<Server*> g_server{nullptr};
 
@@ -36,9 +37,30 @@ int main(int argc, char* argv[])
 
     std::cout << "=== TinyWeChat Server v0.1 ===" << std::endl;
 
-    // Register signal handler
-    signal(SIGINT,  signalHandler);
-    signal(SIGTERM, signalHandler);
+    // 自动创建数据库所在目录，避免 SQLite "unable to open database file" 报错
+    auto dbDir = std::filesystem::path(dbPath).parent_path();
+    if (!dbDir.empty() && !std::filesystem::exists(dbDir)) {
+        std::error_code ec;
+        std::filesystem::create_directories(dbDir, ec);
+        if (ec) {
+            std::cerr << "Failed to create db directory: " << dbDir << " — " << ec.message() << std::endl;
+            return 1;
+        }
+        std::cout << "[SRV] Created db directory: " << dbDir << std::endl;
+    }
+
+    // L-1: Use sigaction() instead of signal() for reliable signal handling
+    struct sigaction sa{};
+    sa.sa_handler = signalHandler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;  // no SA_RESTART — we want accept() to be interrupted
+    sigaction(SIGINT,  &sa, nullptr);
+    sigaction(SIGTERM, &sa, nullptr);
+
+    // Ignore SIGPIPE — write errors handled per-connection via MSG_NOSIGNAL
+    struct sigaction sa_ignore{};
+    sa_ignore.sa_handler = SIG_IGN;
+    sigaction(SIGPIPE, &sa_ignore, nullptr);
 
     // Create and start server
     Server server;

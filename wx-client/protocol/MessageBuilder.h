@@ -6,6 +6,8 @@
 #include <cstdint>
 #include <vector>
 
+#include "protocol/common.h"   // MsgType / ErrCode / FrameType（共享自服务端）
+
 // ─── 通用结构体 ───────────────────────────────────────
 
 struct ErrorNotification {
@@ -188,6 +190,17 @@ struct GroupApplyHandleResponse {
     QString errorMsg;
 };
 
+struct GroupListItem {
+    int     groupId = 0;
+    QString groupName;
+};
+
+struct GroupListResponse {
+    bool ok = false;
+    int  code = 0;
+    std::vector<GroupListItem> groups;
+};
+
 // ─── 消息构造与解析 ──────────────────────────────────
 
 class MessageBuilder {
@@ -250,6 +263,9 @@ public:
 
     static QJsonObject buildGroupApplyHandle(int requestId, const QString& action);
     static GroupApplyHandleResponse parseGroupApplyHandleResponse(const QJsonObject& payload);
+
+    static QJsonObject buildGroupList();
+    static GroupListResponse parseGroupListResponse(const QJsonObject& payload);
 
     // ── 通用 ──────────────────────────────────────────
 

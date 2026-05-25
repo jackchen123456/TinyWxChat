@@ -19,9 +19,6 @@ public:
 
     void openGroup(int groupId, const QString& name);
 
-signals:
-    void back();
-
 private slots:
     void onSendClicked();
     void onFrameReceived(const Frame& frame);
@@ -43,5 +40,4 @@ private:
     QListWidget*  m_messageList;
     QLineEdit*    m_inputEdit;
     QPushButton*  m_sendBtn;
-    QPushButton*  m_backBtn;
 };

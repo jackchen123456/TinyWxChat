@@ -22,51 +22,86 @@ GroupChatWidget::GroupChatWidget(WeChatSocket* socket, int myUserId,
     mainLayout->setSpacing(0);
 
     auto* topBar = new QHBoxLayout();
-    topBar->setContentsMargins(8, 4, 8, 4);
-    m_backBtn = new QPushButton("← 返回");
-    m_backBtn->setFlat(true);
-    m_backBtn->setStyleSheet("font-size: 14px; color: #333; border: none;");
+    topBar->setContentsMargins(24, 14, 24, 14);
     m_titleLabel = new QLabel("群聊");
-    m_titleLabel->setStyleSheet("font-size: 16px; font-weight: bold;");
-    topBar->addWidget(m_backBtn);
+    m_titleLabel->setStyleSheet("font-size: 20px; font-weight: 900; color: #202a31; background: transparent;");
     topBar->addWidget(m_titleLabel, 1);
     mainLayout->addLayout(topBar);
 
     auto* sep = new QFrame();
     sep->setFrameShape(QFrame::HLine);
-    sep->setStyleSheet("color: #ddd;");
+    sep->setStyleSheet("color: #dde3e8; background: #dde3e8;");
     mainLayout->addWidget(sep);
 
     m_messageList = new QListWidget();
-    m_messageList->setStyleSheet("QListWidget { border: none; background: #f0f0f0; }");
+    m_messageList->setStyleSheet(
+        "QListWidget { border: none; background: #fbfcfd; color: #202a31; outline: none; }"
+        "QListWidget::item { border: none; padding: 4px 18px; }"
+    );
+    m_messageList->setSpacing(6);
     mainLayout->addWidget(m_messageList, 1);
 
-    auto* bottomBar = new QHBoxLayout();
-    bottomBar->setContentsMargins(8, 6, 8, 6);
+    auto* composer = new QWidget();
+    composer->setStyleSheet("background: #ffffff; border-top: 1px solid #dde3e8;");
+    auto* composerLayout = new QVBoxLayout(composer);
+    composerLayout->setContentsMargins(0, 0, 0, 0);
+    composerLayout->setSpacing(0);
+
+    auto* toolRow = new QHBoxLayout();
+    toolRow->setContentsMargins(20, 12, 20, 0);
+    toolRow->setSpacing(8);
 
     auto* emojiBtn = new QPushButton("😊");
-    emojiBtn->setFixedSize(34, 34);
-    emojiBtn->setStyleSheet("font-size: 18px; border: none;");
-    bottomBar->addWidget(emojiBtn);
+    emojiBtn->setFixedSize(40, 40);
+    emojiBtn->setCursor(Qt::PointingHandCursor);
+    emojiBtn->setStyleSheet(
+        "QPushButton { border: 1px solid #dde3e8; border-radius: 8px;"
+        "  background: #ffffff; color: #202a31; font-size: 18px; }"
+        "QPushButton:hover { background: #f5f6f8; }"
+    );
+    toolRow->addWidget(emojiBtn);
 
     auto* imageBtn = new QPushButton("📎");
-    imageBtn->setFixedSize(34, 34);
-    imageBtn->setStyleSheet("font-size: 16px; border: none;");
-    bottomBar->addWidget(imageBtn);
+    imageBtn->setFixedSize(40, 40);
+    imageBtn->setCursor(Qt::PointingHandCursor);
+    imageBtn->setStyleSheet(
+        "QPushButton { border: 1px solid #dde3e8; border-radius: 8px;"
+        "  background: #ffffff; color: #202a31; font-size: 17px; }"
+        "QPushButton:hover { background: #f5f6f8; }"
+    );
+    toolRow->addWidget(imageBtn);
+    toolRow->addStretch();
+    composerLayout->addLayout(toolRow);
+
+    auto* bottomBar = new QHBoxLayout();
+    bottomBar->setContentsMargins(20, 12, 20, 18);
+    bottomBar->setSpacing(12);
 
     m_inputEdit = new QLineEdit();
-    m_inputEdit->setPlaceholderText("输入群消息...");
-    m_inputEdit->setMinimumHeight(34);
-    m_sendBtn = new QPushButton("发送");
-    m_sendBtn->setMinimumHeight(34);
-    m_sendBtn->setMinimumWidth(60);
+    m_inputEdit->setPlaceholderText("输入群消息，按 Enter 发送");
+    m_inputEdit->setMinimumHeight(46);
+    m_inputEdit->setStyleSheet(
+        "QLineEdit { border: 1px solid #dde3e8; border-radius: 8px;"
+        "  padding: 0 16px; font-size: 16px; color: #202a31; background: #ffffff;"
+        "  selection-background-color: #27c277; }"
+        "QLineEdit:focus { border-color: rgba(39,194,119,0.6); }"
+    );
+    m_sendBtn = new QPushButton("发送 ▸");
+    m_sendBtn->setFixedSize(90, 46);
+    m_sendBtn->setCursor(Qt::PointingHandCursor);
+    m_sendBtn->setStyleSheet(
+        "QPushButton { border: none; border-radius: 8px;"
+        "  color: #ffffff; background: #27c277; font-weight: 900; font-size: 16px; }"
+        "QPushButton:hover { background: #158a57; }"
+        "QPushButton:disabled { color: #ffffff; background: #b7c9bf; }"
+    );
     bottomBar->addWidget(m_inputEdit, 1);
     bottomBar->addWidget(m_sendBtn);
-    mainLayout->addLayout(bottomBar);
+    composerLayout->addLayout(bottomBar);
+    mainLayout->addWidget(composer);
 
     connect(m_sendBtn, &QPushButton::clicked, this, &GroupChatWidget::onSendClicked);
     connect(m_inputEdit, &QLineEdit::returnPressed, this, &GroupChatWidget::onSendClicked);
-    connect(m_backBtn, &QPushButton::clicked, this, &GroupChatWidget::back);
     connect(m_socket, &WeChatSocket::frameReceived, this, &GroupChatWidget::onFrameReceived);
     connect(m_socket, &WeChatSocket::connectionFailed, this, &GroupChatWidget::onConnectionFailed);
 
@@ -145,7 +180,7 @@ void GroupChatWidget::onFrameReceived(const Frame& frame)
 {
     QString type = frame.payload.value("type").toString();
 
-    if (type == "group.recv") {
+    if (type == MsgType::GROUP_RECV) {
         GroupRecv r = MessageBuilder::parseGroupRecv(frame.payload);
         if (r.groupId == m_groupId) {
             if (r.msgType == 3) {
@@ -155,13 +190,13 @@ void GroupChatWidget::onFrameReceived(const Frame& frame)
             }
         }
 
-    } else if (type == "group.send_res") {
+    } else if (type == MsgType::GROUP_SEND_RES) {
         GroupSendResponse r = MessageBuilder::parseGroupSendResponse(frame.payload);
         if (!r.ok) {
             appendSystem(QString("发送失败：%1").arg(r.errorMsg));
         }
 
-    } else if (type == "group.history_res") {
+    } else if (type == MsgType::GROUP_HISTORY_RES) {
         GroupHistoryResponse r = MessageBuilder::parseGroupHistoryResponse(frame.payload);
         if (!r.ok) {
             appendSystem(QString("历史拉取失败：%1").arg(r.errorMsg));
@@ -181,7 +216,7 @@ void GroupChatWidget::onFrameReceived(const Frame& frame)
             appendSystem("—— 以上为历史消息 ——");
         }
 
-    } else if (type == "error") {
+    } else if (type == MsgType::ERROR) {
         ErrorNotification e = MessageBuilder::parseError(frame.payload);
         appendSystem(QString("错误：%1").arg(e.message));
     }
@@ -197,24 +232,47 @@ void GroupChatWidget::appendMessage(const QString& sender, const QString& conten
                                      const QString& extra)
 {
     bool isMine = (sender == m_myNickname);
-    QString color = isMine ? "#2e86c1" : "#8e44ad";
+    QString color = isMine ? "#2e6fa7" : "#7b3fa0";
     QString timeStr = QDateTime::currentDateTime().toString("HH:mm");
-    QString display = QString("<b style='color:%1'>%2</b> "
-                              "<span style='color:#888; font-size:11px;'>%3</span><br>%4")
+    QString displayText = content;
+    if (!extra.isEmpty() && content.startsWith("[表情]")) {
+        displayText = extra;
+    }
+    QString display = QString("<b style='color:%1; font-size: 14px;'>%2</b> "
+                              "<span style='color:#7d8c96; font-size: 12px;'>%3</span><br>"
+                              "<span style='color:#202a31; font-size: 15px;'>%4</span>")
                           .arg(color, sender.toHtmlEscaped(), timeStr,
-                               content.toHtmlEscaped());
+                               displayText.toHtmlEscaped());
 
     auto* item = new QListWidgetItem();
-    item->setSizeHint(QSize(0, 48));
+    auto* row = new QWidget();
+    row->setStyleSheet("background: transparent;");
+    auto* rowLayout = new QHBoxLayout(row);
+    rowLayout->setContentsMargins(8, 6, 8, 6);
+    rowLayout->setSpacing(0);
+
     auto* label = new QLabel(display);
     label->setWordWrap(true);
     label->setTextFormat(Qt::RichText);
+    label->setMaximumWidth(520);
+    label->setContentsMargins(12, 10, 12, 10);
     label->setStyleSheet(QString(
-        "QLabel { background: %1; border-radius: 6px; padding: 6px 10px; }"
-    ).arg(isMine ? "#d6eaf8" : "#ebdef0"));
+        "QLabel { color: #202a31; background: %1; border: 1px solid %2;"
+        "  border-radius: 12px; padding: 10px 14px; }"
+    ).arg(isMine ? "#d6eaf8" : "#d5f5e3",
+          isMine ? "#bdddf3" : "#bee9cf"));
+
+    if (isMine) {
+        rowLayout->addStretch();
+        rowLayout->addWidget(label);
+    } else {
+        rowLayout->addWidget(label);
+        rowLayout->addStretch();
+    }
 
     m_messageList->addItem(item);
-    m_messageList->setItemWidget(item, label);
+    item->setSizeHint(QSize(0, qMax(70, label->sizeHint().height() + 22)));
+    m_messageList->setItemWidget(item, row);
     m_messageList->scrollToBottom();
 }
 
@@ -222,12 +280,23 @@ void GroupChatWidget::appendImage(const QString& sender, const QString& base64Da
 {
     bool isMine = (sender == m_myNickname);
     QString timeStr = QDateTime::currentDateTime().toString("HH:mm");
-    QColor bgColor = isMine ? QColor("#d6eaf8") : QColor("#fdebd0");
+    QColor bgColor = isMine ? QColor("#d6eaf8") : QColor("#d5f5e3");
 
     auto* item = new QListWidgetItem();
-    auto* widget = new QWidget();
-    auto* hbox = new QHBoxLayout(widget);
-    hbox->setContentsMargins(6, 4, 6, 4);
+    auto* row = new QWidget();
+    row->setStyleSheet("background: transparent;");
+    auto* hbox = new QHBoxLayout(row);
+    hbox->setContentsMargins(8, 6, 8, 6);
+    hbox->setSpacing(0);
+
+    auto* card = new QWidget();
+    card->setStyleSheet(QString(
+        "QWidget { background: %1; border: 1px solid %2; border-radius: 12px; }"
+        "QLabel { background: transparent; border: none; color: #202a31; }"
+    ).arg(bgColor.name(), isMine ? "#bdddf3" : "#bee9cf"));
+    auto* vbox = new QVBoxLayout(card);
+    vbox->setContentsMargins(12, 10, 12, 12);
+    vbox->setSpacing(8);
 
     QByteArray raw = QByteArray::fromBase64(base64Data.toLatin1());
     QImage img;
@@ -242,44 +311,42 @@ void GroupChatWidget::appendImage(const QString& sender, const QString& base64Da
         item->setSizeHint(QSize(0, pix.height() + 24));
     } else {
         imgLabel->setText("[图片加载失败]");
-        imgLabel->setStyleSheet("color: #999; font-size: 12px;");
+        imgLabel->setStyleSheet("color: #7d8c96; font-size: 13px; font-weight: 700;");
         item->setSizeHint(QSize(0, 40));
     }
 
-    QString senderColor = isMine ? "#2e86c1" : "#8e44ad";
-    QLabel* nameLabel = new QLabel(QString("<b style='color:%1'>%2</b> "
-                                           "<span style='color:#888; font-size:11px;'>%3</span>")
+    QString senderColor = isMine ? "#2e6fa7" : "#7b3fa0";
+    QLabel* nameLabel = new QLabel(QString("<b style='color:%1; font-size:14px;'>%2</b> "
+                                           "<span style='color:#7d8c96; font-size:12px;'>%3</span>")
                                        .arg(senderColor, sender.toHtmlEscaped(), timeStr));
     nameLabel->setTextFormat(Qt::RichText);
 
-    auto* vbox = new QVBoxLayout();
-    vbox->setSpacing(2);
     vbox->addWidget(nameLabel);
     vbox->addWidget(imgLabel);
 
     if (isMine) {
         hbox->addStretch();
-        hbox->addLayout(vbox);
+        hbox->addWidget(card);
     } else {
-        hbox->addLayout(vbox);
+        hbox->addWidget(card);
         hbox->addStretch();
     }
 
-    widget->setStyleSheet(QString("background: %1; border-radius: 6px;").arg(bgColor.name()));
-
     m_messageList->addItem(item);
-    m_messageList->setItemWidget(item, widget);
+    item->setSizeHint(QSize(0, qMax(item->sizeHint().height(), card->sizeHint().height() + 20)));
+    m_messageList->setItemWidget(item, row);
     m_messageList->scrollToBottom();
 }
 
 void GroupChatWidget::appendSystem(const QString& text)
 {
     auto* item = new QListWidgetItem();
-    item->setSizeHint(QSize(0, 24));
-    auto* label = new QLabel(QString("<span style='color:#999; font-size:12px;'>%1</span>")
+    item->setSizeHint(QSize(0, 34));
+    auto* label = new QLabel(QString("<span style='color:#71808a; font-size: 13px; font-weight: 700;'>%1</span>")
                                  .arg(text.toHtmlEscaped()));
     label->setAlignment(Qt::AlignCenter);
     label->setTextFormat(Qt::RichText);
+    label->setStyleSheet("background: transparent;");
     m_messageList->addItem(item);
     m_messageList->setItemWidget(item, label);
     m_messageList->scrollToBottom();

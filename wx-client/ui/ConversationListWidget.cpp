@@ -14,15 +14,16 @@ ConversationListWidget::ConversationListWidget(WeChatSocket* socket, QWidget* pa
 
     m_listWidget = new QListWidget();
     m_listWidget->setStyleSheet(
-        "QListWidget { border: none; background: white; }"
-        "QListWidget::item { border-bottom: 1px solid #eee; padding: 4px; }"
-        "QListWidget::item:hover { background: #f0f0f0; }"
+        "QListWidget { border: none; background: transparent; color: #202a31; outline: none; }"
+        "QListWidget::item { border-bottom: 1px solid #edf1f4; padding: 6px 4px; color: #202a31; }"
+        "QListWidget::item:hover { background: #f5f6f8; border-radius: 6px; }"
+        "QListWidget::item:selected { background: #e7f8ef; border-radius: 6px; color: #202a31; }"
     );
     layout->addWidget(m_listWidget);
 
-    m_emptyLabel = new QLabel("暂无会话\n\n发送一条消息或开始聊天即可看到会话");
+    m_emptyLabel = new QLabel("暂无会话\n\n点击好友发起聊天");
     m_emptyLabel->setAlignment(Qt::AlignCenter);
-    m_emptyLabel->setStyleSheet("color: #999; font-size: 14px;");
+    m_emptyLabel->setStyleSheet("color: #6f7f8b; font-size: 15px; font-weight: 700; background: transparent;");
     layout->addWidget(m_emptyLabel);
     m_emptyLabel->hide();
 
@@ -85,7 +86,7 @@ void ConversationListWidget::refreshList()
 
     for (const auto& c : sorted) {
         auto* item = new QListWidgetItem();
-        item->setSizeHint(QSize(0, 52));
+        item->setSizeHint(QSize(0, 60));
         item->setData(Qt::UserRole, c.userId);
         item->setData(Qt::UserRole + 1, c.nickname);
 
@@ -102,11 +103,11 @@ void ConversationListWidget::refreshList()
         // 中间：昵称 + 最后一条消息
         auto* vbox = new QVBoxLayout();
         vbox->setSpacing(2);
-        auto* nameLabel = new QLabel(QString("<b>%1</b>").arg(c.nickname.toHtmlEscaped()));
-        nameLabel->setTextFormat(Qt::RichText);
+        auto* nameLabel = new QLabel(c.nickname);
+        nameLabel->setStyleSheet("font-size: 15px; font-weight: 900; color: #202a31; background: transparent;");
         auto* msgLabel = new QLabel(c.lastMsg.left(30).toHtmlEscaped());
-        msgLabel->setStyleSheet("color: #888; font-size: 12px;");
-        msgLabel->setTextFormat(Qt::RichText);
+        msgLabel->setStyleSheet("color: #6f7f8b; font-size: 13px; font-weight: 700; background: transparent;");
+        msgLabel->setWordWrap(true);
         vbox->addWidget(nameLabel);
         vbox->addWidget(msgLabel);
         hbox->addLayout(vbox, 1);
@@ -114,7 +115,7 @@ void ConversationListWidget::refreshList()
         // 时间
         QString timeStr = QDateTime::fromSecsSinceEpoch(c.timestamp).toString("MM-dd HH:mm");
         auto* timeLabel = new QLabel(timeStr);
-        timeLabel->setStyleSheet("color: #aaa; font-size: 11px;");
+        timeLabel->setStyleSheet("color: #7d8c96; font-size: 12px; font-weight: 700; background: transparent;");
         hbox->addWidget(timeLabel);
 
         m_listWidget->addItem(item);

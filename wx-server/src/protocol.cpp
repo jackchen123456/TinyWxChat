@@ -80,10 +80,21 @@ Frame buildNotification(const std::string& type, const json& body)
     return f;
 }
 
-Frame buildError(int code, const std::string& msg)
+Frame buildError(int code, const std::string& msg, int seq)
 {
     json body;
     body["code"]    = code;
     body["message"] = msg;
-    return buildNotification(MsgType::ERROR, body);
+
+    json j;
+    j["type"] = MsgType::ERROR;
+    j["seq"]  = seq;
+    j["body"] = body;
+
+    Frame f;
+    // When seq > 0 this is an error RESPONSE to a specific request;
+    // otherwise it is an unsolicited NOTIFICATION.
+    f.frameType = (seq > 0) ? FrameType::RESPONSE : FrameType::NOTIFICATION;
+    f.payload   = j.dump();
+    return f;
 }

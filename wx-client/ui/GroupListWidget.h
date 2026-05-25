@@ -7,30 +7,22 @@
 #include <QLineEdit>
 #include "../network/WeChatSocket.h"
 
+// 精简版：只负责显示群聊列表，不含标题/按钮等外部 chrome
 class GroupListWidget : public QWidget
 {
     Q_OBJECT
 public:
     explicit GroupListWidget(WeChatSocket* socket, int myUserId, QWidget* parent = nullptr);
+    void refreshGroups();
 
 signals:
     void openGroupChat(int groupId, const QString& name);
 
 private slots:
-    void onCreateGroup();
-    void onApplyGroup();  // 申请加入群聊
     void onFrameReceived(const Frame& frame);
 
 private:
     WeChatSocket* m_socket;
     int           m_myUserId;
     QListWidget*  m_listWidget;
-    QPushButton*  m_createBtn;
-    QLineEdit*    m_applyEdit;
-    QPushButton*  m_applyBtn;
-    QLabel*       m_statusLabel;
-
-    // 群聊申请待处理列表
-    QListWidget*  m_pendingApplyList;
-    QLabel*       m_pendingApplyLabel;
 };

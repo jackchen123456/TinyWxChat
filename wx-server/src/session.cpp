@@ -5,6 +5,8 @@
 
 #include <unistd.h>
 #include <sys/socket.h>
+#include <poll.h>
+#include <netinet/tcp.h>
 #include <iostream>
 #include <thread>
 #include <cstring>
@@ -38,14 +40,23 @@ void Session::setLoggedIn(int64_t uid, const std::string& nick)
     state_.store(SessionState::LOGGED_IN);
 }
 
-void Session::sendBytes(const std::vector<uint8_t>& data)
+// M-2: sendBytes now checks queue size limit and returns false if full.
+bool Session::sendBytes(const std::vector<uint8_t>& data)
 {
-    if (data.empty()) return;
+    if (data.empty()) return true;
     {
         std::lock_guard<std::mutex> lk(writeMutex_);
+        // M-2: Drop data if write queue exceeds limit (slow client protection)
+        if (writeQueueBytes_ + data.size() > MAX_WRITE_QUEUE_BYTES) {
+            server_.log("session: write queue overflow (uid=" +
+                        std::to_string(userId_) + "), dropping frame");
+            return false;
+        }
         writeQueue_.insert(writeQueue_.end(), data.begin(), data.end());
+        writeQueueBytes_ += data.size();
     }
     writeCv_.notify_one();
+    return true;
 }
 
 void Session::start()
@@ -98,9 +109,29 @@ void Session::closeSocket()
 
 // ── Reader ──────────────────────────────────────────────
 
+// CRITICAL-1: readLoop uses poll() with 90s timeout to detect dead connections.
 void Session::readLoop()
 {
+    struct pollfd pfd{};
+    pfd.fd     = fd_;
+    pfd.events = POLLIN;
+
     while (running_.load()) {
+        // Wait for data with heartbeat timeout
+        int ret = poll(&pfd, 1, HEARTBEAT_TIMEOUT_MS);
+
+        if (ret == 0) {
+            // CRITICAL-1: No data for HEARTBEAT_TIMEOUT_MS → close connection
+            server_.log("session: heartbeat timeout (90s no data), closing uid=" +
+                        std::to_string(userId_));
+            break;
+        }
+        if (ret < 0) {
+            if (errno == EINTR) continue;  // interrupted by signal, retry
+            server_.log("session: poll() error: " + std::string(strerror(errno)));
+            break;
+        }
+
         // 1) Read 8-byte header
         uint8_t header[FRAME_HEADER_SIZE];
         if (!readExact(header, FRAME_HEADER_SIZE)) break;
@@ -158,6 +189,7 @@ void Session::handleFrame(const uint8_t* /*header*/, const std::string& payload)
 
         dispatchMessage(type, seq, body);
     } catch (const json::parse_error&) {
+        // M-1: No seq available here (malformed frame), use NOTIFICATION
         auto err = buildError(ErrCode::INVALID_REQUEST, "Invalid JSON payload");
         sendBytes(serializeFrame(err));
     }
@@ -185,7 +217,8 @@ void Session::dispatchMessage(const std::string& type, int seq, const json& body
 
     // ── Check auth for all other messages ───────────────
     if (state_.load() != SessionState::LOGGED_IN) {
-        auto err = buildError(ErrCode::UNAUTHORIZED, "请先登录");
+        // M-1: Use RESPONSE frame type when seq is available
+        auto err = buildError(ErrCode::UNAUTHORIZED, "请先登录", seq);
         sendBytes(serializeFrame(err));
         return;
     }
@@ -253,7 +286,7 @@ void Session::dispatchMessage(const std::string& type, int seq, const json& body
     }
 
     // ── Unknown ────────────────────────────────────────
-    auto err = buildError(ErrCode::INVALID_REQUEST, "未知消息类型: " + type);
+    auto err = buildError(ErrCode::INVALID_REQUEST, "未知消息类型: " + type, seq);
     sendBytes(serializeFrame(err));
 }
 
@@ -261,6 +294,8 @@ void Session::dispatchMessage(const std::string& type, int seq, const json& body
 
 void Session::handleAuthLogin(int seq, const json& body)
 {
+    // L-3: If already logged in on this session, return current identity.
+    // This is idempotent — not an error, but the caller should know.
     if (state_.load() == SessionState::LOGGED_IN) {
         json res;
         res["code"]    = ErrCode::SUCCESS;
@@ -284,7 +319,12 @@ void Session::handleAuthLogin(int seq, const json& body)
 
     server_.kickExisting(user->id);
     setLoggedIn(user->id, user->nickname);
-    server_.registerSession(user->id, this);
+
+    // CRITICAL-3: Get shared_ptr from allSessions_ and pass to registerSession
+    auto self = server_.getSession(this);
+    if (self) {
+        server_.registerSession(user->id, self);
+    }
 
     server_.log("login: " + user->username + " (uid=" + std::to_string(user->id) + ")");
 
@@ -346,12 +386,15 @@ void Session::handleChatSend(int seq, const json& body)
     int msg_type = body.value("msg_type", 1);
 
     if (to_uid == 0 || content.empty()) {
-        auto err = buildError(ErrCode::INVALID_REQUEST, "缺少 to_user_id 或 content");
+        // M-1: Use RESPONSE with seq so client can match the error
+        auto err = buildError(ErrCode::INVALID_REQUEST, "缺少 to_user_id 或 content", seq);
         sendBytes(serializeFrame(err));
         return;
     }
-    if (content.size() > 4096) {
-        auto err = buildError(ErrCode::MESSAGE_TOO_LONG, "消息内容过长（最大4096字节）");
+    // 文本/表情：4 KiB；图片（msg_type=3）允许较大 base64 内容
+    const size_t maxContent = (msg_type == 3) ? (800u * 1024u) : 4096u;
+    if (content.size() > maxContent) {
+        auto err = buildError(ErrCode::MESSAGE_TOO_LONG, "消息内容过长", seq);
         sendBytes(serializeFrame(err));
         return;
     }
@@ -365,7 +408,8 @@ void Session::handleChatSend(int seq, const json& body)
     ack["timestamp"] = timestamp;
     sendBytes(serializeFrame(buildResponse(MsgType::SEND_RES, seq, ack)));
 
-    Session* target = server_.findSession(to_uid);
+    // CRITICAL-3: findSession now returns shared_ptr — safe to use
+    auto target = server_.findSession(to_uid);
     if (target) {
         json recvBody;
         recvBody["from_user_id"]   = userId_;
@@ -386,7 +430,7 @@ void Session::handleChatHistory(int seq, const json& body)
     int limit             = body.value("limit", 20);
 
     if (with_uid == 0) {
-        auto err = buildError(ErrCode::INVALID_REQUEST, "缺少 with_user_id");
+        auto err = buildError(ErrCode::INVALID_REQUEST, "缺少 with_user_id", seq);
         sendBytes(serializeFrame(err));
         return;
     }
@@ -439,8 +483,9 @@ void Session::handleFriendRequest(int seq, const json& body)
     std::string msg = body.value("message", "");
 
     if (to_uid == 0) {
-        auto err = buildError(ErrCode::INVALID_REQUEST, "缺少 to_user_id");
-        sendBytes(serializeFrame(err));
+        json res;
+        res["code"] = ErrCode::INVALID_REQUEST;
+        sendBytes(serializeFrame(buildResponse(MsgType::FRIEND_REQUEST_RES, seq, res)));
         return;
     }
     if (to_uid == userId_) {
@@ -477,11 +522,20 @@ void Session::handleFriendRequest(int seq, const json& body)
     }
 
     int64_t reqId = server_.db().createFriendRequest(userId_, to_uid, msg);
+    if (reqId < 0) {
+        // 唯一索引兜底：极少数情况下两个并发请求都通过了上面的应用层检查，
+        // 由 DB 层把后到的那个拒掉
+        json res;
+        res["code"] = ErrCode::FRIEND_REQUEST_EXISTS;
+        sendBytes(serializeFrame(buildResponse(MsgType::FRIEND_REQUEST_RES, seq, res)));
+        return;
+    }
     json res;
     res["code"] = ErrCode::SUCCESS;
     sendBytes(serializeFrame(buildResponse(MsgType::FRIEND_REQUEST_RES, seq, res)));
 
-    Session* target = server_.findSession(to_uid);
+    // CRITICAL-3: findSession returns shared_ptr — safe to use
+    auto target = server_.findSession(to_uid);
     if (target) {
         json notifyBody;
         notifyBody["request_id"]    = reqId;
@@ -595,17 +649,18 @@ void Session::handleGroupSend(int seq, const json& body)
     int msg_type = body.value("msg_type", 1);
 
     if (group_id == 0 || content.empty()) {
-        auto err = buildError(ErrCode::INVALID_REQUEST, "缺少 group_id 或 content");
+        auto err = buildError(ErrCode::INVALID_REQUEST, "缺少 group_id 或 content", seq);
         sendBytes(serializeFrame(err));
         return;
     }
-    if (content.size() > 4096) {
-        auto err = buildError(ErrCode::MESSAGE_TOO_LONG, "消息内容过长");
+    const size_t maxContent = (msg_type == 3) ? (800u * 1024u) : 4096u;
+    if (content.size() > maxContent) {
+        auto err = buildError(ErrCode::MESSAGE_TOO_LONG, "消息内容过长", seq);
         sendBytes(serializeFrame(err));
         return;
     }
     if (!server_.db().isGroupMember(group_id, userId_)) {
-        auto err = buildError(ErrCode::GROUP_PERMISSION_DENIED, "你不是群成员");
+        auto err = buildError(ErrCode::GROUP_PERMISSION_DENIED, "你不是群成员", seq);
         sendBytes(serializeFrame(err));
         return;
     }
@@ -622,7 +677,8 @@ void Session::handleGroupSend(int seq, const json& body)
     auto members = server_.db().getGroupMembers(group_id);
     for (auto& m : members) {
         if (m.user_id == userId_) continue;
-        Session* target = server_.findSession(m.user_id);
+        // CRITICAL-3: findSession returns shared_ptr — safe to use
+        auto target = server_.findSession(m.user_id);
         if (target) {
             json recvBody;
             recvBody["group_id"]       = group_id;
@@ -645,7 +701,14 @@ void Session::handleGroupHistory(int seq, const json& body)
     int limit              = body.value("limit", 20);
 
     if (group_id == 0) {
-        auto err = buildError(ErrCode::INVALID_REQUEST, "缺少 group_id");
+        auto err = buildError(ErrCode::INVALID_REQUEST, "缺少 group_id", seq);
+        sendBytes(serializeFrame(err));
+        return;
+    }
+
+    // HIGH-2: Only group members can read group history
+    if (!server_.db().isGroupMember(group_id, userId_)) {
+        auto err = buildError(ErrCode::GROUP_PERMISSION_DENIED, "你不是群成员，无法查看群消息", seq);
         sendBytes(serializeFrame(err));
         return;
     }
@@ -691,7 +754,7 @@ void Session::handleGroupApply(int seq, const json& body)
     std::string msg = body.value("message", "");
 
     if (group_id == 0) {
-        auto err = buildError(ErrCode::INVALID_REQUEST, "缺少 group_id");
+        auto err = buildError(ErrCode::INVALID_REQUEST, "缺少 group_id", seq);
         sendBytes(serializeFrame(err));
         return;
     }
@@ -716,7 +779,8 @@ void Session::handleGroupApply(int seq, const json& body)
 
     int64_t owner_uid = server_.db().getGroupOwner(group_id);
     if (owner_uid > 0 && owner_uid != userId_) {
-        Session* owner = server_.findSession(owner_uid);
+        // CRITICAL-3: findSession returns shared_ptr — safe to use
+        auto owner = server_.findSession(owner_uid);
         if (owner) {
             json notifyBody;
             notifyBody["request_id"]    = reqId;
@@ -785,6 +849,7 @@ void Session::writerLoop()
             });
             if (!running_.load()) break;
             chunk.swap(writeQueue_);
+            writeQueueBytes_ = 0;  // M-2: reset byte counter after swap
         }
 
         size_t sent = 0;

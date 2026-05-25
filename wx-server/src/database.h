@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <optional>
+#include <mutex>
 #include <sqlite3.h>
 #include <nlohmann/json.hpp>
 
@@ -130,6 +131,13 @@ public:
 private:
     void createTables();
     void seedTestUsers();
+
+    // 全局互斥：所有公开方法在内部 lock，确保对 sqlite3* 句柄和共享
+    // 预编译语句（stmt_auth_/stmt_insert_msg_）的 reset→bind→step→column
+    // 序列是原子的。SQLite 自身的 serialized 模式只保证 sqlite3_step 串行，
+    // 不会保护 stmt 对象状态。
+    // 用 recursive_mutex 是因为 handleGroupApply 会回调 joinGroup。
+    mutable std::recursive_mutex mutex_;
 
     sqlite3* db_ = nullptr;
 

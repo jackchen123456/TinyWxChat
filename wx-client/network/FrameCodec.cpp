@@ -6,13 +6,13 @@ QByteArray FrameCodec::encode(const Frame& frame)
 {
     // 1. 序列化 payload 为 JSON
     QByteArray payload = QJsonDocument(frame.payload).toJson(QJsonDocument::Compact);
-    if (static_cast<uint32_t>(payload.size()) > MAX_PAYLOAD) {
+    if (static_cast<uint32_t>(payload.size()) > MAX_PAYLOAD_SIZE) {
         return {}; // Payload 超限
     }
 
     // 2. 构造 8B 帧头 + payload
     QByteArray result;
-    result.resize(HEADER_SIZE + payload.size());
+    result.resize(FRAME_HEADER_SIZE + payload.size());
 
     uint32_t length = static_cast<uint32_t>(payload.size());
 
@@ -34,17 +34,17 @@ QByteArray FrameCodec::encode(const Frame& frame)
 
     // payload
     if (length > 0) {
-        std::memcpy(result.data() + HEADER_SIZE, payload.constData(), length);
+        std::memcpy(result.data() + FRAME_HEADER_SIZE, payload.constData(), length);
     }
 
     return result;
 }
 
-bool FrameCodec::decode(const QByteArray& data, Frame& frame, int& consumed)
+FrameCodec::DecodeResult FrameCodec::decode(const QByteArray& data, Frame& frame, int& consumed)
 {
     // 1. 至少需要 8B 帧头
-    if (data.size() < HEADER_SIZE)
-        return false; // 数据不足
+    if (data.size() < static_cast<int>(FRAME_HEADER_SIZE))
+        return DecodeResult::Incomplete;
 
     // 2. 解析 length（大端 uint32）
     uint32_t length = (static_cast<uint8_t>(data[0]) << 24)
@@ -52,12 +52,12 @@ bool FrameCodec::decode(const QByteArray& data, Frame& frame, int& consumed)
                     | (static_cast<uint8_t>(data[2]) << 8)
                     |  static_cast<uint8_t>(data[3]);
 
-    if (length > MAX_PAYLOAD)
-        return false; // 帧格式错误：length 超限
+    if (length > MAX_PAYLOAD_SIZE)
+        return DecodeResult::Malformed; // length 超限
 
     // 3. 检查 payload 是否已完整到达
-    if (data.size() < static_cast<int>(HEADER_SIZE + length))
-        return false; // 数据不足（等更多数据）
+    if (data.size() < static_cast<int>(FRAME_HEADER_SIZE + length))
+        return DecodeResult::Incomplete;
 
     // 4. 解析 version、frame_type、flags
     frame.version   = (static_cast<uint8_t>(data[4]) << 8)
@@ -68,20 +68,20 @@ bool FrameCodec::decode(const QByteArray& data, Frame& frame, int& consumed)
     // 校验 frame_type 范围（0x01~0x04）
     uint8_t ft = static_cast<uint8_t>(data[6]);
     if (ft < 0x01 || ft > 0x04)
-        return false; // 帧格式错误：不识别的 frame_type
+        return DecodeResult::Malformed;
 
     // 5. 解析 JSON payload
     if (length > 0) {
-        QByteArray payloadBytes = data.mid(HEADER_SIZE, static_cast<int>(length));
+        QByteArray payloadBytes = data.mid(FRAME_HEADER_SIZE, static_cast<int>(length));
         QJsonParseError err;
         QJsonDocument doc = QJsonDocument::fromJson(payloadBytes, &err);
         if (err.error != QJsonParseError::NoError)
-            return false; // JSON 解析失败
+            return DecodeResult::Malformed;
         frame.payload = doc.object();
     } else {
         frame.payload = QJsonObject(); // 空 payload（如 PING/PONG）
     }
 
-    consumed = HEADER_SIZE + static_cast<int>(length);
-    return true;
+    consumed = FRAME_HEADER_SIZE + static_cast<int>(length);
+    return DecodeResult::Ok;
 }

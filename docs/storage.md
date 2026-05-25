@@ -93,12 +93,12 @@ CREATE TABLE friends (
     FOREIGN KEY (user_b) REFERENCES users(id)
 );
 
--- 约束：避免重复好友关系（小号在前）
-CREATE UNIQUE INDEX idx_friends_pair
-    ON friends( MIN(user_a, user_b), MAX(user_a, user_b) );
+-- 应用层在插入时保证 user_a < user_b，避免 (1,2) 和 (2,1) 重复；
+-- 因此普通唯一索引就够。SQLite 不支持函数索引中的 MIN/MAX。
+CREATE UNIQUE INDEX idx_friends_pair ON friends(user_a, user_b);
 ```
 
-- 存储时保证 `user_a < user_b`，避免 (1,2) 和 (2,1) 重复
+- 存储时由应用层（`handleFriendRequest`）保证 `user_a < user_b`
 
 ### 2.4 friend_requests
 
@@ -116,6 +116,11 @@ CREATE TABLE friend_requests (
 );
 
 CREATE INDEX idx_fr_to ON friend_requests(to_uid, status);
+
+-- 部分唯一索引：同一 from→to 同时只能有一条 pending 请求，
+-- 从 SQL 层兜底应用层的并发去重检查。
+CREATE UNIQUE INDEX uq_friend_request_pending
+    ON friend_requests(from_uid, to_uid) WHERE status = 0;
 ```
 
 ### 2.5 groups
@@ -220,6 +225,7 @@ CREATE INDEX idx_gr_group ON group_requests(group_id, status);
 | messages | `idx_messages_to` | 按目标用户+时间排序（未使用） |
 | friends | `idx_friends_pair` | 好友关系存在性检查 |
 | friend_requests | `idx_fr_to` | 用户查询待处理申请 |
+| friend_requests | `uq_friend_request_pending` | 部分唯一索引：同一 from→to 同时只允许一条 pending |
 | group_members | `idx_gm_group` | 群成员列表 |
 | group_members | `idx_gm_user` | 用户参与哪些群 |
 | group_messages | `idx_gm_seq` | 群消息拉取 |
@@ -242,25 +248,26 @@ MVP 暂不做自动清理。后续可考虑：
 **查询最近会话（单聊）：**
 
 ```sql
--- 获取 user_id=1 的最近 50 个会话
-SELECT
-  CASE WHEN from_uid = 1 THEN to_uid ELSE from_uid END AS peer_id,
-  MAX(timestamp) AS last_time,
-  (SELECT content FROM messages
-   WHERE msg_id = (
-     SELECT MAX(msg_id) FROM messages
-     WHERE (from_uid = 1 AND to_uid = peer_id)
-        OR (from_uid = peer_id AND to_uid = 1)
-   )) AS last_content
-FROM messages
-WHERE from_uid = 1 OR to_uid = 1
-GROUP BY peer_id
-ORDER BY last_time DESC
-LIMIT 50;
+-- 获取 user_id=1 的最近会话；先按 peer 聚合得到 MAX(msg_id)（严格单调，
+-- 避免同秒撞），再回连 messages 拿最后一条的 content + timestamp。
+SELECT t.peer_id, u.nickname, m.content, m.timestamp
+FROM (
+    SELECT
+        CASE WHEN from_uid = ?1 THEN to_uid ELSE from_uid END AS peer_id,
+        MAX(msg_id) AS last_id
+    FROM messages
+    WHERE from_uid = ?1 OR to_uid = ?1
+    GROUP BY peer_id
+) t
+JOIN messages m ON m.msg_id = t.last_id
+JOIN users u ON u.id = t.peer_id
+ORDER BY m.timestamp DESC;
 ```
 
+> 之前一版直接 `SELECT content, MAX(timestamp) ... GROUP BY peer_id` 会让 SQLite 从分组里任意挑一行的 `content`，导致 last_content 跟 last_timestamp 对不上。两段式子查询解决了这个 bug。
+
 **注意事项：**
-- 此查询在消息量 < 10 万条时性能可接受
+- 此查询在消息量 < 10 万条时性能可接受（依赖 `idx_messages_pair` + `idx_messages_to`）
 - 后续数据增长可增加 `conversations` 独立表做写时维护
 - MVP 阶段不做未读计数（需要额外的 `last_read_msg_id` 字段）
 

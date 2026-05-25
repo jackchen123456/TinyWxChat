@@ -23,9 +23,13 @@ private slots:
     void onConnectionFailed(const QString& reason);
 
 private:
+    void showStatus(const QString& text, const QString& bgColor, const QString& textColor);
+
     WeChatSocket* m_socket;
     QLineEdit*    m_usernameEdit;
     QLineEdit*    m_passwordEdit;
     QPushButton*  m_loginBtn;
-    QLabel*       m_statusLabel;
+    QPushButton*  m_loginTab;
+    QPushButton*  m_registerTab;
+    QLabel*       m_statusLabel = nullptr;
 };
